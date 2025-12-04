@@ -1,0 +1,228 @@
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Roboto, sans-serif;
+}
+
+body {
+    background: #ebe8e8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    position: relative;
+}
+
+/* Banner inside card */
+.card-banner {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    color: #fff;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.card-banner i {
+    margin-right: 1px;
+    font-size: 16px;
+}
+
+.card-banner.success {
+    background-color: #4BB543;
+}
+
+.card-banner.error {
+    background-color: #FF5252;
+}
+
+.card-banner.warning {
+    background-color: #fab15d;
+}
+
+.card-banner.show {
+    opacity: 1;
+}
+
+.card-banner.hidden {
+    opacity: 0;
+}
+
+/* Toast container */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Toast */
+.toast {
+    padding: 12px 20px;
+    margin-top: 10px;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+}
+
+.toast.success {
+    background-color: #4BB543;
+}
+
+.toast.error {
+    background-color: #FF5252;
+}
+
+.toast.warning {
+    background-color: #fab15d;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+/* Login Card */
+.whole-card {
+    background: #f7f0f0;
+    border-radius: 12px;
+    padding: 30px 40px;
+    width: 350px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12), 0 5px 10px rgba(0, 0, 0, 0.08);
+}
+
+.upper {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.upper h1 {
+    font-size: 48px;
+    font-weight: bold;
+    background: linear-gradient(90deg, #59b9e6, #7fd6ec);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.upper .desc {
+    font-size: 22px;
+    color: #555;
+    margin-top: 5px;
+}
+
+.mid .input-group {
+    position: relative;
+    margin: 15px 0;
+}
+
+.mid .input-group input {
+    width: 100%;
+    padding: 12px 40px 12px 40px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.mid .input-group input:focus {
+    border-color: #59b9e6;
+    box-shadow: 0 0 8px rgba(89, 185, 230, 0.4);
+}
+
+.mid .input-group i {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    font-size: 18px;
+}
+
+.mid .input-group .fa-envelope,
+.mid .input-group .fa-key {
+    left: 12px;
+    pointer-events: none;
+}
+
+.mid .input-group .toggle-password {
+    right: 12px;
+    cursor: pointer;
+}
+
+.lower {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.lower .forgot {
+    text-align: right;
+    margin-bottom: 10px;
+}
+
+.lower .forgot a {
+    text-decoration: none;
+    font-size: 14px;
+    color: #59b9e6;
+}
+
+.lower button {
+    width: 100%;
+    padding: 12px;
+    background: #59b9e6;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.lower button:hover {
+    background: #7fd6ec;
+}
+
+.lower p {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.lower p a {
+    color: #59b9e6;
+    text-decoration: none;
+}
