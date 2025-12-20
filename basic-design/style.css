@@ -1,0 +1,431 @@
+/* =========================================
+   1. Variables & Reset
+   ========================================= */
+:root {
+  --bg-body: linear-gradient(135deg, #e6ddd1, #c8b9a6);
+  --bg-card: linear-gradient(to top, #6f5a3d, #8a7353);
+  --bg-input: #8a7353;
+  --bg-button: #f0e6d2;
+  --bg-button-hover: #e0d4bc;
+
+  --text-primary: #ffffff;
+  --text-secondary: #f0e6d2;
+  --text-button: #6f5a3d;
+  --text-error: #ff4d4d;
+  --text-success: #4caf50;
+
+  --card-width: 380px;
+  --radius-lg: 16px;
+  --radius-md: 8px;
+  --transition-speed: 0.3s;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* =========================================
+   2. Body Layout
+   ========================================= */
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg-body);
+}
+
+/* =========================================
+   3. Card Container
+   ========================================= */
+.card {
+  width: var(--card-width);
+  padding: 30px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s forwards;
+}
+
+/* =========================================
+   4. Logo Section
+   ========================================= */
+.logo {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.logo img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid rgba(240, 230, 210, 0.3);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 6px;
+}
+
+.logo img:hover {
+  transform: scale(1.05) rotate(3deg);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+}
+
+.logo h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 12px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.section-label {
+  display: block;
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  margin-top: 10px;
+}
+
+/* =========================================
+   5. Inputs & Forms
+   ========================================= */
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  transition: box-shadow var(--transition-speed) ease, transform 0.2s ease;
+}
+
+.input-group select {
+  cursor: pointer;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-button);
+  transform: translateY(-2px);
+}
+
+.input-group input::placeholder {
+  color: rgba(240, 230, 210, 0.6);
+}
+
+.input-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.input-row .input-group {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+/* =========================================
+   6. Radio Buttons (Gender)
+   ========================================= */
+.gender {
+  justify-content: space-between;
+}
+
+.gender label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  flex: 1;
+  justify-content: flex-start;
+}
+
+.gender input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--text-secondary);
+  background: var(--bg-input);
+  cursor: pointer;
+  position: relative;
+}
+
+.gender input[type="radio"]:checked::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  background: var(--text-secondary);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* =========================================
+   7. Checkbox (Remember Me)
+   ========================================= */
+.remember-me input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 2px solid var(--text-secondary);
+  background: var(--bg-input);
+  position: relative;
+  cursor: pointer;
+}
+
+.remember-me input[type="checkbox"]:checked::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%);
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: bold;
+}
+
+/* =========================================
+   8. Buttons
+   ========================================= */
+.action-button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-button);
+  background: var(--bg-button);
+  cursor: pointer;
+  transition: background var(--transition-speed) ease, transform 0.2s ease;
+  margin-top: 10px;
+}
+
+.action-button:hover {
+  background: var(--bg-button-hover);
+  transform: translateY(-2px);
+}
+
+/* =========================================
+   9. Terms & Links
+   ========================================= */
+.terms {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: 15px;
+  line-height: 1.4;
+  opacity: 0.8;
+}
+
+.signup-prompt,
+.login-prompt,
+.prompt {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.signup-prompt a,
+.login-prompt a,
+.prompt a,
+.forgot-link {
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: text-decoration var(--transition-speed) ease, color 0.3s ease;
+}
+
+.signup-prompt a:hover,
+.login-prompt a:hover,
+.prompt a:hover,
+.forgot-link:hover {
+  text-decoration: underline;
+  color: var(--text-primary);
+}
+
+/* =========================================
+   10. Notifications
+   ========================================= */
+.form-notification {
+  background: linear-gradient(135deg, #ff4d4d, #ff7b7b);
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-left: 4px solid #ff0000;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.form-notification.hidden {
+  display: none;
+}
+
+/* =========================================
+   11. Options Row
+   ========================================= */
+.options-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+/* =========================================
+   12. OTP Inputs
+   ========================================= */
+.otp-container {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.otp-input {
+  width: 40px;
+  height: 50px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--bg-input);
+  color: var(--text-primary);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.otp-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--bg-button);
+  transform: translateY(-4px);
+  background: #9b825e;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* =========================================
+   13. Loader
+   ========================================= */
+.logo-loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #6f5a3d;
+  padding: 25px 45px;
+  border-radius: 12px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  animation: fadeInUp 0.6s forwards;
+  z-index: 1000;
+}
+
+.logo-loading.hidden {
+  display: none;
+}
+
+.logo-loading h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-top: 10px;
+  letter-spacing: 2px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 6px solid var(--bg-button);
+  border-top: 6px solid #6f5a3d;
+  border-radius: 50%;
+  animation: spinnerRotate 1s linear infinite;
+  margin: 0 auto 20px auto;
+}
+
+/* =========================================
+   14. Animations
+   ========================================= */
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes spinnerRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================================
+   15. Responsive
+   ========================================= */
+@media (max-width: 400px) {
+  .card {
+    width: 90%;
+    padding: 20px;
+  }
+  .input-row {
+    flex-direction: column;
+    gap: 0;
+  }
+  .input-row .input-group {
+    margin-bottom: 15px;
+  }
+  .gender {
+    flex-direction: row;
+    gap: 10px;
+  }
+}

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VerseVibe Sign Up</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="card">
+      <!-- Notification -->
+      <div class="form-notification hidden">
+        <p class="notification-text"></p>
+      </div>
+
+      <!-- Logo -->
+      <div class="logo">
+        <img src="logo.png" alt="Logo" />
+        <h1>VerseVibe</h1>
+        <p class="subtitle">Create a new account</p>
+      </div>
+
+      <!-- Form -->
+      <form id="authForm" data-type="signup">
+        <!-- Name Row -->
+        <div class="input-row">
+          <div class="input-group">
+            <input type="text" placeholder="First Name" id="firstName" />
+          </div>
+          <div class="input-group">
+            <input type="text" placeholder="Last Name" id="lastName" />
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="input-group">
+          <input type="email" placeholder="Email" id="email" />
+        </div>
+
+        <!-- Password -->
+        <div class="input-group">
+          <input type="password" placeholder="Password" id="password" />
+        </div>
+
+        <!-- Birthday -->
+        <label class="section-label">Birthday</label>
+        <div class="input-row">
+          <div class="input-group">
+            <select id="month">
+              <option value="">Month</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <select id="date">
+              <option value="">Day</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <select id="year">
+              <option value="">Year</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Gender -->
+        <label class="section-label">Gender</label>
+        <div class="input-row gender">
+          <label>
+            <input type="radio" name="gender" value="female" /> Female
+          </label>
+          <label>
+            <input type="radio" name="gender" value="male" /> Male
+          </label>
+          <label>
+            <input type="radio" name="gender" value="custom" /> Custom
+          </label>
+        </div>
+
+        <!-- Terms -->
+        <p class="terms">
+          By clicking Sign Up, you agree to our Terms, Privacy Policy and
+          Cookies Policy.
+        </p>
+
+        <!-- Button -->
+        <button type="submit" class="signup-button action-button">
+          Sign Up
+        </button>
+
+        <!-- Prompt -->
+        <div class="signup-prompt">
+          <span>Already have an account? </span>
+          <a href="index.html">Login</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Loader -->
+    <div class="logo-loading hidden">
+      <div class="spinner"></div>
+      <h1>VerseVibe</h1>
+    </div>
+
+    <script src="console.js"></script>
+  </body>
+</html>
