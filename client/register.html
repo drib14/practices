@@ -6,14 +6,14 @@
   
   <!-- SEO Optimization Meta Tags -->
   <title>Register | FixConnect - Join Our Service Booking Platform</title>
-  <meta name="description" content="Sign up for FixConnect as a customer to book premium local services, or join as a service provider to manage bookings and expand your business.">
-  <meta name="keywords" content="FixConnect register, service provider sign up, customer registration, hire local services">
+  <meta name="description" content="Sign up for a FixConnect account. Register as a customer to book quality local services, or as a service provider to manage schedules and bookings.">
+  <meta name="keywords" content="FixConnect registration, register local service, provider signup, book handyman">
   <meta name="robots" content="index, follow">
   
   <!-- Stylesheets -->
   <link rel="stylesheet" href="style.css">
   
-  <!-- FontAwesome & Google Fonts -->
+  <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -24,66 +24,99 @@
 </head>
 <body>
 
+  <!-- Minimalist Stepper Card -->
   <main class="glass-card" id="register-card">
     <header class="brand-header">
       <h1 class="brand-logo" id="register-brand-title">Create Account</h1>
-      <p class="brand-subtitle">Join FixConnect to book or offer services</p>
+      <p class="brand-subtitle" id="step-subtitle">Step 1: Enter your account details</p>
     </header>
 
+    <!-- Visual Stepper Progress Indicator -->
+    <div class="stepper-container" aria-label="Registration Steps">
+      <div class="stepper-line" aria-hidden="true"></div>
+      <div class="stepper-progress" id="stepper-progress" aria-hidden="true"></div>
+      <div class="step-node active" id="step-node-1" aria-current="step">1</div>
+      <div class="step-node" id="step-node-2">2</div>
+      <div class="step-node" id="step-node-3">3</div>
+    </div>
+
     <form id="register-form" class="auth-form" novalidate>
-      <div class="form-group">
-        <label for="reg-fullname" class="form-label">Full Name</label>
-        <div class="input-wrapper">
-          <i class="fa-solid fa-signature input-icon"></i>
-          <input type="text" id="reg-fullname" class="form-control" placeholder="Enter your full name" required>
+      
+      <!-- STEP 1: Account details -->
+      <div class="step-pane active" id="step-pane-1">
+        <div class="form-group">
+          <label for="reg-username" class="form-label">Username</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-user input-icon"></i>
+            <input type="text" id="reg-username" class="form-control" placeholder="Choose a username" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-email" class="form-label">Email Address</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-envelope input-icon"></i>
+            <input type="email" id="reg-email" class="form-control" placeholder="yourname@example.com" required>
+          </div>
+        </div>
+
+        <div class="stepper-nav">
+          <button type="button" id="step1-next-btn" class="btn-premium">Continue</button>
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="reg-username" class="form-label">Username</label>
-        <div class="input-wrapper">
-          <i class="fa-solid fa-user input-icon"></i>
-          <input type="text" id="reg-username" class="form-control" placeholder="Choose a username" required>
+      <!-- STEP 2: Password safety -->
+      <div class="step-pane" id="step-pane-2">
+        <div class="form-group">
+          <label for="reg-password" class="form-label">Password</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-lock input-icon"></i>
+            <input type="password" id="reg-password" class="form-control" placeholder="Minimum 12 characters" required>
+          </div>
+          
+          <!-- Password strength checklist -->
+          <div class="password-checklists" id="reg-pw-checklist">
+            <span class="check-item invalid" id="len-check"><i class="fa-solid fa-circle-xmark"></i> 12+ Chars</span>
+            <span class="check-item invalid" id="upper-check"><i class="fa-solid fa-circle-xmark"></i> Uppercase</span>
+            <span class="check-item invalid" id="lower-check"><i class="fa-solid fa-circle-xmark"></i> Lowercase</span>
+            <span class="check-item invalid" id="num-check"><i class="fa-solid fa-circle-xmark"></i> Number</span>
+            <span class="check-item invalid" id="special-check"><i class="fa-solid fa-circle-xmark"></i> Special Char</span>
+          </div>
+        </div>
+
+        <div class="stepper-nav">
+          <button type="button" id="step2-back-btn" class="btn-premium btn-secondary">Back</button>
+          <button type="button" id="step2-next-btn" class="btn-premium">Continue</button>
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="reg-email" class="form-label">Email Address</label>
-        <div class="input-wrapper">
-          <i class="fa-solid fa-envelope input-icon"></i>
-          <input type="email" id="reg-email" class="form-control" placeholder="yourname@example.com" required>
+      <!-- STEP 3: Profile Setup & Submit -->
+      <div class="step-pane" id="step-pane-3">
+        <div class="form-group">
+          <label for="reg-fullname" class="form-label">Full Name</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-signature input-icon"></i>
+            <input type="text" id="reg-fullname" class="form-control" placeholder="Enter your full name" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-role" class="form-label">Account Role</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-briefcase input-icon"></i>
+            <select id="reg-role" class="form-control form-select" required>
+              <option value="user" selected>Customer (Book services)</option>
+              <option value="provider">Service Provider (Offer services)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="stepper-nav">
+          <button type="button" id="step3-back-btn" class="btn-premium btn-secondary">Back</button>
+          <button type="submit" id="register-submit-btn" class="btn-premium">Complete Registration</button>
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="reg-role" class="form-label">Account Role</label>
-        <div class="input-wrapper">
-          <i class="fa-solid fa-briefcase input-icon"></i>
-          <select id="reg-role" class="form-control form-select" required>
-            <option value="user" selected>Customer (Book services)</option>
-            <option value="provider">Service Provider (Offer services)</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="reg-password" class="form-label">Password</label>
-        <div class="input-wrapper">
-          <i class="fa-solid fa-lock input-icon"></i>
-          <input type="password" id="reg-password" class="form-control" placeholder="Minimum 12 characters" required>
-        </div>
-        
-        <!-- Live password strength checker checklist -->
-        <div class="password-checklists" id="reg-pw-checklist">
-          <span class="check-item invalid" id="len-check"><i class="fa-solid fa-circle-xmark"></i> 12+ Chars</span>
-          <span class="check-item invalid" id="upper-check"><i class="fa-solid fa-circle-xmark"></i> Uppercase</span>
-          <span class="check-item invalid" id="lower-check"><i class="fa-solid fa-circle-xmark"></i> Lowercase</span>
-          <span class="check-item invalid" id="num-check"><i class="fa-solid fa-circle-xmark"></i> Number</span>
-          <span class="check-item invalid" id="special-check"><i class="fa-solid fa-circle-xmark"></i> Special Char</span>
-        </div>
-      </div>
-
-      <button type="submit" class="btn-premium" id="register-submit-btn">Sign Up</button>
     </form>
 
     <footer class="auth-footer">

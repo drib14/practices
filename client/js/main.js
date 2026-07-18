@@ -1,4 +1,4 @@
-// Configure Axios defaults for cookies and base URL
+// Configure Axios defaults for credentials and base URL
 axios.defaults.baseURL = 'http://localhost:5000/api';
 axios.defaults.withCredentials = true;
 
@@ -8,7 +8,6 @@ axios.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     
-    // Check if the response failed because the access token expired
     if (
       error.response?.status === 401 && 
       error.response?.data?.code === 'TOKEN_EXPIRED' && 
@@ -16,17 +15,14 @@ axios.interceptors.response.use(
     ) {
       originalRequest._retry = true;
       try {
-        // Attempt token rotation
         await axios.post('/auth/refresh');
-        // Retry the original request
         return axios(originalRequest);
       } catch (refreshError) {
-        // Session expired or compromised (reused token). Force redirect to login.
         Swal.fire({
           icon: 'warning',
           title: 'Session Expired',
           text: 'Your security session has expired. Please log in again.',
-          confirmButtonColor: '#6366f1'
+          confirmButtonColor: '#0f172a'
         }).then(() => {
           window.location.href = 'login.html';
         });
@@ -38,15 +34,14 @@ axios.interceptors.response.use(
 );
 
 // Client-side Password Strength Evaluator
-const checkPasswordStrength = (password, email = '') => {
-  const checks = {
+const checkPasswordStrength = (password) => {
+  return {
     length: password.length >= 12,
     uppercase: /[A-Z]/.test(password),
     lowercase: /[a-z]/.test(password),
     number: /[0-9]/.test(password),
     special: /[!@#$%^&*(),.?":{}|<>_+-]/.test(password)
   };
-  return checks;
 };
 
 const updateChecklistUI = (checks, prefix = '') => {
@@ -78,7 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const path = window.location.pathname;
   const page = path.substring(path.lastIndexOf('/') + 1);
 
-  // Determine Page Mode
   if (page === 'register.html') {
     initRegisterPage();
   } else if (page === 'login.html') {
@@ -88,36 +82,152 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// --- Register Page Setup ---
+// --- Register Page Setup (Walkthrough Wizard) ---
 function initRegisterPage() {
   const regForm = document.getElementById('register-form');
   const passwordInput = document.getElementById('reg-password');
   const emailInput = document.getElementById('reg-email');
+  const usernameInput = document.getElementById('reg-username');
+  const fullNameInput = document.getElementById('reg-fullname');
+  const roleInput = document.getElementById('reg-role');
 
-  // Real-time password check
-  passwordInput.addEventListener('input', () => {
-    const checks = checkPasswordStrength(passwordInput.value, emailInput.value);
-    updateChecklistUI(checks);
+  let currentStep = 1;
+  const totalSteps = 3;
+
+  // Step Indicators and Progress
+  const progressLine = document.getElementById('stepper-progress');
+  const nodes = [
+    document.getElementById('step-node-1'),
+    document.getElementById('step-node-2'),
+    document.getElementById('step-node-3')
+  ];
+  const panes = [
+    document.getElementById('step-pane-1'),
+    document.getElementById('step-pane-2'),
+    document.getElementById('step-pane-3')
+  ];
+  const subtitle = document.getElementById('step-subtitle');
+
+  const updateWizardUI = (step) => {
+    // Update progress bar width: 0% at Step 1, 50% at Step 2, 100% at Step 3
+    const progressPercent = ((step - 1) / (totalSteps - 1)) * 100;
+    progressLine.style.width = `${progressPercent}%`;
+
+    // Update Nodes classes
+    nodes.forEach((node, index) => {
+      const nodeStep = index + 1;
+      if (nodeStep < step) {
+        node.className = 'step-node completed';
+        node.innerHTML = '<i class="fa-solid fa-check"></i>';
+      } else if (nodeStep === step) {
+        node.className = 'step-node active';
+        node.textContent = nodeStep;
+      } else {
+        node.className = 'step-node';
+        node.textContent = nodeStep;
+      }
+    });
+
+    // Update Step Subtitle
+    if (step === 1) {
+      subtitle.textContent = 'Step 1: Enter your account details';
+    } else if (step === 2) {
+      subtitle.textContent = 'Step 2: Choose a secure password';
+    } else if (step === 3) {
+      subtitle.textContent = 'Step 3: Define your profile and role';
+    }
+
+    // Toggle Panes
+    panes.forEach((pane, index) => {
+      if (index + 1 === step) {
+        pane.classList.add('active');
+      } else {
+        pane.classList.remove('active');
+      }
+    });
+  };
+
+  // Navigations Button bindings
+  document.getElementById('step1-next-btn').addEventListener('click', () => {
+    const username = usernameInput.value.trim();
+    const email = emailInput.value.trim();
+
+    if (!username || !email) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Missing Fields',
+        text: 'Please enter a username and email address.',
+        confirmButtonColor: '#0f172a'
+      });
+      return;
+    }
+
+    // Simple Email Regex check
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Email',
+        text: 'Please enter a valid email address.',
+        confirmButtonColor: '#0f172a'
+      });
+      return;
+    }
+
+    currentStep = 2;
+    updateWizardUI(currentStep);
   });
 
-  regForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const fullName = document.getElementById('reg-fullname').value;
-    const username = document.getElementById('reg-username').value;
-    const email = emailInput.value;
-    const role = document.getElementById('reg-role').value;
-    const password = passwordInput.value;
+  document.getElementById('step2-back-btn').addEventListener('click', () => {
+    currentStep = 1;
+    updateWizardUI(currentStep);
+  });
 
-    // Local validation
-    const checks = checkPasswordStrength(password, email);
+  document.getElementById('step2-next-btn').addEventListener('click', () => {
+    const password = passwordInput.value;
+    const checks = checkPasswordStrength(password);
     const isStrong = Object.values(checks).every(v => v);
+
     if (!isStrong) {
       Swal.fire({
         icon: 'error',
         title: 'Weak Password',
-        text: 'Please satisfy all password safety criteria indicated.',
-        confirmButtonColor: '#6366f1'
+        text: 'Your password must satisfy all security rules.',
+        confirmButtonColor: '#0f172a'
+      });
+      return;
+    }
+
+    currentStep = 3;
+    updateWizardUI(currentStep);
+  });
+
+  document.getElementById('step3-back-btn').addEventListener('click', () => {
+    currentStep = 2;
+    updateWizardUI(currentStep);
+  });
+
+  // Real-time password check
+  passwordInput.addEventListener('input', () => {
+    const checks = checkPasswordStrength(passwordInput.value);
+    updateChecklistUI(checks);
+  });
+
+  // Registration Form Submission (Final Step)
+  regForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const fullName = fullNameInput.value.trim();
+    const username = usernameInput.value.trim();
+    const email = emailInput.value.trim();
+    const role = roleInput.value;
+    const password = passwordInput.value;
+
+    if (!fullName) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Missing Field',
+        text: 'Please enter your full name.',
+        confirmButtonColor: '#0f172a'
       });
       return;
     }
@@ -135,7 +245,7 @@ function initRegisterPage() {
         icon: 'success',
         title: 'Check Your Email',
         text: response.data.message,
-        confirmButtonColor: '#6366f1'
+        confirmButtonColor: '#0f172a'
       }).then(() => {
         window.location.href = 'login.html';
       });
@@ -144,7 +254,7 @@ function initRegisterPage() {
         icon: 'error',
         title: 'Registration Failed',
         text: error.response?.data?.error || 'An unexpected error occurred.',
-        confirmButtonColor: '#6366f1'
+        confirmButtonColor: '#0f172a'
       });
     }
   });
@@ -166,12 +276,11 @@ function initLoginPage() {
   const resetPasswordInput = document.getElementById('reset-password');
   const resetTokenInput = document.getElementById('reset-token');
 
-  // Parse URL queries for verification or reset callbacks
+  // Parse queries
   const urlParams = new URLSearchParams(window.location.search);
   const verifyToken = urlParams.get('token');
   const resetToken = urlParams.get('resetToken');
 
-  // 1. Email Verification Callback Trigger
   if (verifyToken) {
     Swal.fire({
       title: 'Verifying Email...',
@@ -187,9 +296,8 @@ function initLoginPage() {
           icon: 'success',
           title: 'Verified!',
           text: res.data.message,
-          confirmButtonColor: '#6366f1'
+          confirmButtonColor: '#0f172a'
         }).then(() => {
-          // Clear query string params
           window.history.replaceState({}, document.title, window.location.pathname);
         });
       })
@@ -198,12 +306,11 @@ function initLoginPage() {
           icon: 'error',
           title: 'Verification Failed',
           text: err.response?.data?.error || 'Invalid or expired token.',
-          confirmButtonColor: '#6366f1'
+          confirmButtonColor: '#0f172a'
         });
       });
   }
 
-  // 2. Password Reset Callback State
   if (resetToken) {
     loginSection.style.display = 'none';
     forgotSection.style.display = 'none';
@@ -216,7 +323,7 @@ function initLoginPage() {
     });
   }
 
-  // View switches
+  // Switches
   forgotLink.addEventListener('click', (e) => {
     e.preventDefault();
     loginSection.style.display = 'none';
@@ -228,7 +335,6 @@ function initLoginPage() {
     loginSection.style.display = 'block';
   });
 
-  // Handle Login Submission
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const usernameOrEmail = document.getElementById('login-username').value;
@@ -242,12 +348,11 @@ function initLoginPage() {
         icon: 'error',
         title: 'Login Error',
         text: error.response?.data?.error || 'Invalid username/email or password.',
-        confirmButtonColor: '#6366f1'
+        confirmButtonColor: '#0f172a'
       });
     }
   });
 
-  // Handle Forgot Password Submission
   forgotForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('forgot-email').value;
@@ -258,7 +363,7 @@ function initLoginPage() {
         icon: 'info',
         title: 'Check Your Inbox',
         text: res.data.message,
-        confirmButtonColor: '#6366f1'
+        confirmButtonColor: '#0f172a'
       }).then(() => {
         forgotSection.style.display = 'none';
         loginSection.style.display = 'block';
@@ -268,12 +373,11 @@ function initLoginPage() {
         icon: 'error',
         title: 'Request Failed',
         text: error.response?.data?.error || 'An error occurred.',
-        confirmButtonColor: '#6366f1'
+        confirmButtonColor: '#0f172a'
       });
     }
   });
 
-  // Handle Reset Password Submission
   resetForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const token = resetTokenInput.value;
@@ -286,7 +390,7 @@ function initLoginPage() {
         icon: 'error',
         title: 'Weak Password',
         text: 'Please satisfy all password safety criteria.',
-        confirmButtonColor: '#6366f1'
+        confirmButtonColor: '#0f172a'
       });
       return;
     }
@@ -297,7 +401,7 @@ function initLoginPage() {
         icon: 'success',
         title: 'Reset Complete',
         text: res.data.message,
-        confirmButtonColor: '#6366f1'
+        confirmButtonColor: '#0f172a'
       }).then(() => {
         window.location.href = 'login.html';
       });
@@ -306,7 +410,7 @@ function initLoginPage() {
         icon: 'error',
         title: 'Reset Failed',
         text: error.response?.data?.error || 'Failed to reset password.',
-        confirmButtonColor: '#6366f1'
+        confirmButtonColor: '#0f172a'
       });
     }
   });
@@ -325,7 +429,6 @@ async function initDashboardPage() {
   const logoutBtn = document.getElementById('logout-btn');
   const logoutAllBtn = document.getElementById('logout-all-btn');
 
-  // Retrieve user details on load
   try {
     const res = await axios.get('/auth/profile');
     const user = res.data.data;
@@ -334,23 +437,20 @@ async function initDashboardPage() {
     profileFullname.textContent = user.fullName;
     profileUsername.textContent = user.username;
     profileEmail.textContent = user.email;
-    profileRole.textContent = user.role;
+    profileRole.textContent = user.role === 'provider' ? 'Service Provider' : 'Customer';
     
     // Style role box if provider
     if (user.role === 'provider') {
-      document.getElementById('p-role-box').classList.add('role-provider');
+      document.getElementById('p-role-box').style.borderLeftColor = 'var(--warning)';
     }
 
-    // Populate header details
     headerName.textContent = user.fullName;
     headerRole.textContent = `Role: ${user.role.toUpperCase()}`;
 
   } catch (error) {
-    // Interceptor redirects on refresh failure, but handle fallback redirect just in case
     console.error('Failed to load profile details', error);
   }
 
-  // Handle Logout Current Session
   logoutBtn.addEventListener('click', async () => {
     try {
       await axios.post('/auth/logout');
@@ -360,12 +460,11 @@ async function initDashboardPage() {
         icon: 'error',
         title: 'Logout Error',
         text: 'Failed to sign out correctly.',
-        confirmButtonColor: '#6366f1'
+        confirmButtonColor: '#0f172a'
       });
     }
   });
 
-  // Handle Logout All Session Devices
   logoutAllBtn.addEventListener('click', async () => {
     try {
       await axios.post('/auth/logout-all');
@@ -375,7 +474,7 @@ async function initDashboardPage() {
         icon: 'error',
         title: 'Logout Error',
         text: 'Failed to sign out from all devices.',
-        confirmButtonColor: '#6366f1'
+        confirmButtonColor: '#0f172a'
       });
     }
   });

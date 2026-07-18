@@ -6,14 +6,14 @@
   
   <!-- SEO Optimization Meta Tags -->
   <title>Dashboard | FixConnect - Manage Your Bookings</title>
-  <meta name="description" content="Manage your FixConnect profile, monitor active bookings, or view customer/provider schedules from your personalized dashboard.">
-  <meta name="keywords" content="FixConnect dashboard, profile management, booking control panel">
+  <meta name="description" content="Manage your FixConnect profile, check active bookings, and schedule services from your simple, clean account panel.">
+  <meta name="keywords" content="FixConnect, customer dashboard, provider profile, service booking scheduler">
   <meta name="robots" content="noindex, nofollow">
   
   <!-- Stylesheets -->
   <link rel="stylesheet" href="style.css">
   
-  <!-- FontAwesome & Google Fonts -->
+  <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -24,25 +24,26 @@
 </head>
 <body>
 
+  <!-- Minimalist Dashboard Layout -->
   <main class="dashboard-container" id="main-dashboard">
     
-    <!-- Header -->
+    <!-- Top Header -->
     <header class="dashboard-header">
       <div>
-        <h1 class="brand-logo" style="font-size: 2rem; margin-bottom: 0;" id="dashboard-title">FixConnect</h1>
-        <p class="brand-subtitle">Secure Session Portal</p>
+        <h1 class="dashboard-title-logo" id="dashboard-logo">FixConnect</h1>
+        <p class="brand-subtitle">Service Booking Portal</p>
       </div>
       <div style="text-align: right;">
-        <p style="font-weight: 600; color: #a5b4fc;" id="user-header-name">Loading...</p>
-        <p style="font-size: 0.8rem; color: #94a3b8;" id="user-header-role">Role: Customer</p>
+        <p style="font-weight: 600;" id="user-header-name">Loading...</p>
+        <p style="font-size: 0.8rem; color: var(--text-secondary);" id="user-header-role">Customer</p>
       </div>
     </header>
 
-    <!-- Profile Details Card -->
+    <!-- Content Card -->
     <section class="profile-card">
       <header>
-        <h2 style="font-size: 1.5rem; margin-bottom: 10px; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
-          Account Profile Information
+        <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 24px; color: var(--text-primary);">
+          Profile Information
         </h2>
       </header>
 
@@ -61,17 +62,17 @@
         </div>
         <div class="profile-item" id="p-role-box">
           <div class="profile-item-label">Account Role</div>
-          <div class="profile-item-value" style="text-transform: capitalize;" id="profile-role">Loading...</div>
+          <div class="profile-item-value" id="profile-role">Loading...</div>
         </div>
       </div>
 
-      <!-- Action Buttons -->
+      <!-- Action Area -->
       <footer class="btn-group">
         <button id="logout-btn" class="btn-premium">
           <i class="fa-solid fa-right-from-bracket"></i> Sign Out (Current Device)
         </button>
         <button id="logout-all-btn" class="btn-premium btn-secondary">
-          <i class="fa-solid fa-devices"></i> Sign Out (All Devices)
+          <i class="fa-solid fa-desktop"></i> Sign Out (All Devices)
         </button>
       </footer>
     </section>

@@ -67,7 +67,7 @@ app.use((err, req, res, next) => {
 });
 
 const server = app.listen(env.PORT, () => {
-  logger.info(`FixConnect API running securely on port ${env.PORT}`);
+  console.log(`Server running on port ${env.PORT}`);
 });
 
 process.on('unhandledRejection', (reason, promise) => {

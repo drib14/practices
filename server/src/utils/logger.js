@@ -26,13 +26,7 @@ export const logger = {
       }
     });
 
-    const logEntry = {
-      timestamp: new Date().toISOString(),
-      level,
-      message,
-      ...(Object.keys(sanitizedMeta).length > 0 ? { metadata: sanitizedMeta } : {})
-    };
-
-    console.log(JSON.stringify(logEntry));
+    const metaStr = Object.keys(sanitizedMeta).length > 0 ? ` | ${JSON.stringify(sanitizedMeta)}` : '';
+    console.log(`[${level}] ${message}${metaStr}`);
   }
 };

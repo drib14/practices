@@ -6,14 +6,14 @@
   
   <!-- SEO Optimization Meta Tags -->
   <title>Login | FixConnect - Premium Service Booking Platform</title>
-  <meta name="description" content="Securely log in to FixConnect to access professional services or manage your client bookings. Your trusted home and local service booking platform.">
-  <meta name="keywords" content="FixConnect, service booking, login, local services, handyman, contractor booking">
+  <meta name="description" content="Log in to your FixConnect profile to manage bookings or offer services. Connecting homeowners with professional local service providers.">
+  <meta name="keywords" content="FixConnect, service booking, login, local services, handyman, plumber, contractor">
   <meta name="robots" content="index, follow">
   
   <!-- Stylesheets -->
   <link rel="stylesheet" href="style.css">
   
-  <!-- FontAwesome & Google Fonts -->
+  <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -24,14 +24,14 @@
 </head>
 <body>
 
-  <!-- Card container with unique ID for identification -->
+  <!-- Minimalist Card Container -->
   <main class="glass-card" id="auth-card">
     
-    <!-- State 1: User Login Form -->
+    <!-- State 1: User Login -->
     <section id="login-section">
       <header class="brand-header">
         <h1 class="brand-logo" id="main-brand-title">FixConnect</h1>
-        <p class="brand-subtitle">Enter credentials to access your account</p>
+        <p class="brand-subtitle">Enter your credentials to sign in</p>
       </header>
 
       <form id="login-form" class="auth-form" novalidate>
@@ -62,7 +62,7 @@
       </footer>
     </section>
 
-    <!-- State 2: Forgot Password Form -->
+    <!-- State 2: Forgot Password Request -->
     <section id="forgot-section" style="display: none;">
       <header class="brand-header">
         <h2 class="brand-logo">Reset Password</h2>
@@ -79,15 +79,15 @@
         </div>
 
         <button type="submit" class="btn-premium">Send Reset Link</button>
-        <button type="button" id="back-to-login-btn" class="btn-premium btn-secondary">Back to Login</button>
+        <button type="button" id="back-to-login-btn" class="btn-premium btn-secondary" style="margin-top: 12px;">Back to Login</button>
       </form>
     </section>
 
-    <!-- State 3: Reset Password Callback Form -->
+    <!-- State 3: Reset Password Submission -->
     <section id="reset-section" style="display: none;">
       <header class="brand-header">
         <h2 class="brand-logo">New Password</h2>
-        <p class="brand-subtitle">Create a secure new password</p>
+        <p class="brand-subtitle">Choose a secure password for your account</p>
       </header>
 
       <form id="reset-form" class="auth-form" novalidate>
@@ -100,7 +100,6 @@
             <input type="password" id="reset-password" class="form-control" placeholder="Minimum 12 characters" required>
           </div>
           
-          <!-- Password strength checklist -->
           <div class="password-checklists" id="reset-pw-checklist">
             <span class="check-item invalid" id="reset-len-check"><i class="fa-solid fa-circle-xmark"></i> 12+ Chars</span>
             <span class="check-item invalid" id="reset-upper-check"><i class="fa-solid fa-circle-xmark"></i> Uppercase</span>
