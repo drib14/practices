@@ -14,8 +14,8 @@ import {
 
 // Password Validation Helper
 const validatePasswordStrength = (password, email) => {
-  if (password.length < 12) {
-    return 'Password must be at least 12 characters long.';
+  if (password.length < 8) {
+    return 'Password must be at least 8 characters long.';
   }
   if (!/[A-Z]/.test(password)) {
     return 'Password must contain at least one uppercase letter.';
@@ -102,9 +102,9 @@ const clearCookies = (res) => {
 // @desc    Register a new user
 // @route   POST /api/auth/register
 export const register = async (req, res) => {
-  const { username, email, password, fullName, role } = req.body;
+  const { username, email, password, firstName, lastName, role } = req.body;
 
-  if (!username || !email || !password || !fullName) {
+  if (!username || !email || !password || !firstName || !lastName) {
     return res.status(400).json({ success: false, error: 'All fields are required' });
   }
 
@@ -134,14 +134,15 @@ export const register = async (req, res) => {
       username: username.trim(),
       email: email.toLowerCase(),
       password: hashedPassword,
-      fullName: fullName.trim(),
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
       role: role === 'provider' ? 'provider' : 'user',
       verificationToken,
       verificationTokenExpires
     });
 
     // Send verification email asynchronously
-    sendVerificationEmail(newUser.email, verificationToken, newUser.fullName);
+    sendVerificationEmail(newUser.email, verificationToken, `${newUser.firstName} ${newUser.lastName}`);
 
     logger.info('User registered successfully', { userId: newUser._id });
 
@@ -179,7 +180,7 @@ export const verifyEmail = async (req, res) => {
     user.verificationTokenExpires = null;
     await user.save();
 
-    sendWelcomeEmail(user.email, user.fullName);
+    sendWelcomeEmail(user.email, `${user.firstName} ${user.lastName}`);
     logger.info('User verified email successfully', { userId: user._id });
 
     res.status(200).json({
@@ -233,7 +234,7 @@ export const login = async (req, res) => {
       if (user.loginAttempts >= 10) {
         user.lockUntil = new Date(Date.now() + 30 * 60 * 1000); // Lock for 30 minutes
         logger.warn('Account locked due to brute force protection', { email: user.email });
-        sendLockoutAlert(user.email, user.fullName);
+        sendLockoutAlert(user.email, `${user.firstName} ${user.lastName}`);
       }
       
       await user.save();
@@ -275,7 +276,8 @@ export const login = async (req, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
-        fullName: user.fullName,
+        firstName: user.firstName,
+        lastName: user.lastName,
         role: user.role
       }
     });
@@ -400,7 +402,7 @@ export const forgotPassword = async (req, res) => {
     user.resetPasswordExpires = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
     await user.save();
 
-    sendPasswordResetEmail(user.email, resetToken, user.fullName);
+    sendPasswordResetEmail(user.email, resetToken, `${user.firstName} ${user.lastName}`);
     logger.info('Password reset token generated and sent', { userId: user._id });
 
     res.status(200).json({

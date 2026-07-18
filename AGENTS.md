@@ -59,7 +59,7 @@ Password authentication must be implemented first.
 
 # Password Rules
 
-Minimum length: 12
+Minimum length: 8
 
 Must contain:
 
@@ -700,6 +700,14 @@ Every future update MUST:
 - Add date.
 - Describe changes.
 - Never delete previous history.
+
+## 1.2.0
+Date: 2026-07-18
+
+Added:
+- Migrated frontend client to React + Vite.
+- Reduced minimum password length constraint from 12 to 8.
+- Integrated premium multimedia check-wrench-hexagon logo.
 
 ## 1.1.0
 Date: 2026-07-18
