@@ -5,16 +5,16 @@ import cookieParser from 'cookie-parser';
 import { env } from './config/env.js';
 import { connectDB } from './config/db.js';
 import authRoutes from './routes/auth.js';
-import servicesRoutes from './routes/services.js';
+import workerRoutes from './routes/workers.js';
 import { globalLimiter } from './middleware/rateLimiter.js';
 import { logger } from './utils/logger.js';
-import { seedServices } from './utils/seed.js';
+import { seedWorkers } from './utils/seed.js';
 
 // Initialize Database connection
 await connectDB();
 
 // Seed sample service data if collection is empty
-await seedServices();
+await seedWorkers();
 
 const app = express();
 
@@ -73,8 +73,8 @@ app.use((req, res, next) => {
 // Authentication routes
 app.use('/api/auth', authRoutes);
 
-// Service Discovery routes
-app.use('/api/services', servicesRoutes);
+// Worker Discovery routes
+app.use('/api/workers', workerRoutes);
 
 // Simple diagnostic path
 app.get('/', (req, res) => {

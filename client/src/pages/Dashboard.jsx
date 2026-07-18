@@ -1,129 +1,112 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser, logoutAllUser } from '../store/slices/authSlice.js';
-import { fetchServices, fetchCategories, fetchServiceBySlug, clearSelectedService } from '../store/slices/servicesSlice.js';
+import { fetchWorkers, fetchCategories, fetchWorkerById, clearSelectedWorker } from '../store/slices/workerSlice.js';
 import Button from '../components/Button.jsx';
 
 export default function Dashboard() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const { items: services, categories, selectedItem: selectedService, loading, categoriesLoading } = useSelector((state) => state.services);
+  const { items: workers, categories, selectedItem: selectedWorker, loading, categoriesLoading } = useSelector((state) => state.workers);
 
-  // Profile overlay / collapse toggle
   const [showProfile, setShowProfile] = useState(false);
 
-  // Search & Filter state
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
-  const [serviceArea, setServiceArea] = useState('');
+  const [city, setCity] = useState('');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
-  const [sort, setSort] = useState('newest');
+  const [minRating, setMinRating] = useState('');
+  const [minExperience, setMinExperience] = useState('');
+  const [sort, setSort] = useState('recommended');
   const [page, setPage] = useState(1);
 
-  // Fetch initial categories
   useEffect(() => {
     dispatch(fetchCategories());
   }, [dispatch]);
 
-  // Fetch services when parameters change
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      dispatch(fetchServices({
+      dispatch(fetchWorkers({
         search,
         category,
-        serviceArea,
+        city,
         minPrice,
         maxPrice,
+        minRating,
+        minExperience,
         sort,
         page
       }));
-    }, 300); // 300ms debounce on keystrokes
+    }, 300);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [dispatch, search, category, serviceArea, minPrice, maxPrice, sort, page]);
+  }, [dispatch, search, category, city, minPrice, maxPrice, minRating, minExperience, sort, page]);
 
   if (!user) return null;
 
-  const handleCardClick = (slug) => {
-    dispatch(fetchServiceBySlug(slug));
+  const handleCardClick = (id) => {
+    dispatch(fetchWorkerById(id));
   };
 
   const handleCloseModal = () => {
-    dispatch(clearSelectedService());
+    dispatch(clearSelectedWorker());
   };
 
   const handleResetFilters = () => {
     setSearch('');
     setCategory('');
-    setServiceArea('');
+    setCity('');
     setMinPrice('');
     setMaxPrice('');
-    setSort('newest');
+    setMinRating('');
+    setMinExperience('');
+    setSort('recommended');
     setPage(1);
   };
 
   return (
     <main className="dashboard-container">
-      
-      {/* Top Header */}
-      <header className="dashboard-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <img 
-            src="/favicon.png" 
-            alt="FixConnect Logo" 
-            className="brand-logo-img" 
-            style={{ width: '40px', height: '40px', margin: 0 }} 
-            onError={(e) => e.target.style.display = 'none'} 
-          />
-          <div>
-            <h1 className="dashboard-title-logo" style={{ margin: 0 }}>FixConnect</h1>
-            <p className="brand-subtitle" style={{ margin: 0 }}>Service Discovery Portal</p>
-          </div>
+      {/* Top Navbar */}
+      <nav className="dashboard-nav">
+        <div className="nav-brand">
+          <i className="fa-solid fa-wrench" style={{ color: 'var(--primary)' }}></i>
+          <span>FixConnect</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{ textAlign: 'right' }} className="user-nav-meta">
-            <p style={{ fontWeight: 600, margin: 0 }}>{user.firstName} {user.lastName}</p>
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: 0 }}>
-              Role: {user.role?.toUpperCase()}
-            </p>
+        <div className="nav-user" onClick={() => setShowProfile(!showProfile)}>
+          <div className="avatar-circle">
+            {user.firstName.charAt(0)}{user.lastName.charAt(0)}
           </div>
-          <Button variant="secondary" onClick={() => setShowProfile(!showProfile)}>
-            <i className="fa-solid fa-user-cog"></i> Profile
-          </Button>
-          <Button onClick={() => dispatch(logoutUser())}>
-            <i className="fa-solid fa-right-from-bracket"></i> Sign Out
-          </Button>
+          <span className="user-greeting">Hi, {user.firstName}</span>
+          <i className={`fa-solid fa-chevron-${showProfile ? 'up' : 'down'} toggle-icon`}></i>
         </div>
-      </header>
+      </nav>
 
-      {/* Collapsible Profile widget */}
+      {/* Profile Dropdown */}
       {showProfile && (
-        <section className="profile-card animate-fadeIn">
-          <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h2 className="dashboard-welcome" style={{ margin: 0 }}>Your Account Profile</h2>
-            <Button variant="secondary" onClick={() => setShowProfile(false)} style={{ padding: '6px 12px' }}>Close Info</Button>
+        <section className="profile-panel animate-fadeIn">
+          <header className="profile-header">
+            <h3>Account Settings</h3>
+            <span className={`status-badge ${user.isVerified ? 'verified' : 'unverified'}`}>
+              {user.isVerified ? (
+                <><i className="fa-solid fa-circle-check"></i> Verified</>
+              ) : (
+                <><i className="fa-solid fa-circle-xmark"></i> Unverified</>
+              )}
+            </span>
           </header>
-          
-          <div className="profile-grid">
+
+          <div className="profile-content">
             <div className="profile-item">
-              <div className="profile-item-label">First Name</div>
-              <div className="profile-item-value">{user.firstName}</div>
+              <label>Full Name</label>
+              <div className="profile-item-value">{user.firstName} {user.lastName}</div>
             </div>
             <div className="profile-item">
-              <div className="profile-item-label">Last Name</div>
-              <div className="profile-item-value">{user.lastName}</div>
-            </div>
-            <div className="profile-item">
-              <div className="profile-item-label">Username</div>
-              <div className="profile-item-value">{user.username}</div>
-            </div>
-            <div className="profile-item">
-              <div className="profile-item-label">Email Address</div>
+              <label>Email Address</label>
               <div className="profile-item-value">{user.email}</div>
             </div>
             <div className="profile-item">
-              <div className="profile-item-label">Account Role</div>
+              <label>Account Type</label>
               <div className="profile-item-value">
                 {user.role === 'provider' ? 'Service Provider' : 'Customer'}
               </div>
@@ -138,7 +121,7 @@ export default function Dashboard() {
         </section>
       )}
 
-      {/* Main Service Discovery Grid & Filter Sidebar */}
+      {/* Discovery Area */}
       <div className="discovery-layout">
         
         {/* Sidebar Controls */}
@@ -161,14 +144,14 @@ export default function Dashboard() {
           </div>
 
           <div className="filter-group">
-            <label htmlFor="filter-area">Service Area</label>
+            <label htmlFor="filter-area">City</label>
             <input 
               type="text" 
               id="filter-area"
               className="filter-input"
-              placeholder="e.g. North Side"
-              value={serviceArea}
-              onChange={(e) => { setServiceArea(e.target.value); setPage(1); }}
+              placeholder="e.g. New York"
+              value={city}
+              onChange={(e) => { setCity(e.target.value); setPage(1); }}
             />
           </div>
 
@@ -193,21 +176,44 @@ export default function Dashboard() {
             </div>
           </div>
 
+          <div className="filter-group">
+            <label>Minimum Rating</label>
+            <input
+              type="number"
+              placeholder="e.g. 4.5"
+              step="0.1"
+              min="0" max="5"
+              className="filter-input"
+              value={minRating}
+              onChange={(e) => { setMinRating(e.target.value); setPage(1); }}
+            />
+          </div>
+
+          <div className="filter-group">
+            <label>Years of Experience</label>
+            <input
+              type="number"
+              placeholder="Min Years"
+              className="filter-input"
+              value={minExperience}
+              onChange={(e) => { setMinExperience(e.target.value); setPage(1); }}
+            />
+          </div>
+
           <Button variant="secondary" onClick={handleResetFilters} style={{ marginTop: '10px' }}>
             <i className="fa-solid fa-rotate-left"></i> Reset Filters
           </Button>
         </aside>
 
-        {/* Catalog Main View */}
+        {/* Worker Main View */}
         <section className="catalog-section">
           
-          {/* Search bar & Sorting bar */}
           <div className="catalog-actions-bar">
             <div className="search-input-wrapper">
               <i className="fa-solid fa-magnifying-glass"></i>
               <input 
                 type="text" 
-                placeholder="Search services, descriptions, or tags..."
+                placeholder="Search workers by name, skills, category..."
                 value={search}
                 onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               />
@@ -221,49 +227,64 @@ export default function Dashboard() {
                 value={sort}
                 onChange={(e) => { setSort(e.target.value); setPage(1); }}
               >
-                <option value="newest">Newest First</option>
-                <option value="oldest">Oldest First</option>
-                <option value="priceAsc">Price: Low to High</option>
-                <option value="priceDesc">Price: High to Low</option>
-                <option value="alphabetical">Alphabetical</option>
+                <option value="recommended">Recommended</option>
+                <option value="nearest">Nearest</option>
+                <option value="highestRated">Highest Rated</option>
+                <option value="mostExperienced">Most Experienced</option>
+                <option value="lowestPrice">Lowest Price</option>
+                <option value="highestPrice">Highest Price</option>
+                <option value="recentlyJoined">Recently Joined</option>
               </select>
             </div>
           </div>
 
-          {/* Service Cards Listing */}
           {loading ? (
             <div style={{ display: 'flex', justifyContent: 'center', padding: '60px 0', color: 'var(--text-secondary)' }}>
-              <p><i className="fa-solid fa-circle-notch fa-spin"></i> Loading services...</p>
+              <p><i className="fa-solid fa-circle-notch fa-spin"></i> Loading workers...</p>
             </div>
-          ) : services.length === 0 ? (
+          ) : workers.length === 0 ? (
             <div className="empty-state">
-              <i className="fa-solid fa-folder-open"></i>
-              <h3>No Services Found</h3>
-              <p>We couldn't find any services matching your criteria. Try adjusting your search queries or category filters.</p>
+              <i className="fa-solid fa-user-xmark" style={{ fontSize: '3rem', color: 'var(--text-muted)', marginBottom: '1rem' }}></i>
+              <h3>No Workers Found</h3>
+              <p>We couldn't find any workers matching your criteria. Try adjusting your search queries or filters.</p>
               <Button onClick={handleResetFilters}>Clear Filters</Button>
             </div>
           ) : (
-            <div className="services-grid">
-              {services.map((svc) => (
+            <div className="workers-grid">
+              {workers.map((worker) => (
                 <article 
-                  key={svc._id} 
-                  className="service-card animate-fadeIn"
-                  onClick={() => handleCardClick(svc.slug)}
+                  key={worker._id}
+                  className="worker-card animate-fadeIn"
+                  onClick={() => handleCardClick(worker._id)}
                 >
-                  <div className="service-card-body">
-                    <span className="service-card-tag">{svc.category}</span>
-                    <h3 className="service-card-title">{svc.title}</h3>
-                    <p className="service-card-desc">{svc.shortDescription}</p>
-                    <div className="service-card-provider">
-                      <i className="fa-solid fa-circle-user"></i> {svc.providerName}
+                  <div className="worker-card-body" style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
+                    {worker.profilePhoto ? (
+                       <img src={worker.profilePhoto} alt={worker.displayName} style={{ width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{ width: '60px', height: '60px', borderRadius: '50%', backgroundColor: 'var(--gray-200)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                         <i className="fa-solid fa-user" style={{ color: 'var(--gray-500)', fontSize: '1.5rem' }}></i>
+                      </div>
+                    )}
+                    <div>
+                      <h3 className="worker-card-title">
+                        {worker.displayName}
+                        {worker.verificationStatus === 'Verified' && <i className="fa-solid fa-circle-check" style={{ color: 'var(--primary)', marginLeft: '6px', fontSize: '1rem' }} title="Verified Worker"></i>}
+                      </h3>
+                      <p className="worker-card-desc" style={{ fontSize: '0.85rem', marginBottom: '0.5rem' }}>
+                        {worker.categories.join(', ')}
+                      </p>
+                      <div style={{ display: 'flex', gap: '1rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                        <span><i className="fa-solid fa-star" style={{ color: '#fbbf24' }}></i> {worker.averageRating} ({worker.completedJobs} jobs)</span>
+                        <span><i className="fa-solid fa-location-dot"></i> {worker.city}</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="service-card-footer">
-                    <span className="service-card-price">
-                      ${svc.startingPrice}<span>/job</span>
+                  <div className="worker-card-footer">
+                    <span className="worker-card-price">
+                      ${worker.startingPrice}<span>/hr</span>
                     </span>
-                    <button className="service-card-btn">
-                      Details <i className="fa-solid fa-arrow-right"></i>
+                    <button className="worker-card-btn">
+                      View Profile <i className="fa-solid fa-arrow-right"></i>
                     </button>
                   </div>
                 </article>
@@ -274,72 +295,113 @@ export default function Dashboard() {
 
       </div>
 
-      {/* Service Details Popup Modal */}
-      {selectedService && (
+      {/* Worker Profile Modal */}
+      {selectedWorker && (
         <div className="modal-overlay" onClick={handleCloseModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <button className="modal-close-btn" onClick={handleCloseModal}>
               <i className="fa-solid fa-xmark"></i>
             </button>
             
-            <div className="modal-body">
-              <div className="modal-header-meta">
-                <span className="service-card-tag">{selectedService.category}</span>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                  <i className="fa-solid fa-location-dot"></i> {selectedService.serviceArea}
-                </span>
+            <div className="modal-body" style={{ maxHeight: '80vh', overflowY: 'auto' }}>
+              <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', marginBottom: '1.5rem' }}>
+                {selectedWorker.profilePhoto ? (
+                  <img src={selectedWorker.profilePhoto} alt={selectedWorker.displayName} style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover' }} />
+                ) : (
+                  <div style={{ width: '100px', height: '100px', borderRadius: '50%', backgroundColor: 'var(--gray-200)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <i className="fa-solid fa-user" style={{ color: 'var(--gray-500)', fontSize: '2.5rem' }}></i>
+                  </div>
+                )}
+                <div>
+                  <h2 className="modal-title" style={{ marginBottom: '0.2rem' }}>
+                    {selectedWorker.fullName}
+                    {selectedWorker.verificationStatus === 'Verified' && <i className="fa-solid fa-circle-check" style={{ color: 'var(--primary)', marginLeft: '8px', fontSize: '1.2rem' }} title="Verified Worker"></i>}
+                  </h2>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
+                    <i className="fa-solid fa-location-dot"></i> {selectedWorker.city}, {selectedWorker.province} (Covers {selectedWorker.serviceRadius} miles)
+                  </div>
+                  <div style={{ display: 'flex', gap: '1rem', fontSize: '0.9rem', fontWeight: 500 }}>
+                    <span><i className="fa-solid fa-star" style={{ color: '#fbbf24' }}></i> {selectedWorker.averageRating} Rating</span>
+                    <span><i className="fa-solid fa-briefcase"></i> {selectedWorker.completedJobs} Jobs Completed</span>
+                  </div>
+                </div>
               </div>
-              
-              <h2 className="modal-title">{selectedService.title}</h2>
               
               <div className="modal-info-bar">
                 <div className="modal-info-item">
-                  <span className="modal-info-label">Estimated Price</span>
+                  <span className="modal-info-label">Starting Price</span>
                   <span className="modal-info-value" style={{ color: 'var(--success)' }}>
-                    Starting at ${selectedService.startingPrice}
+                    ${selectedWorker.startingPrice}/hr
                   </span>
                 </div>
                 <div className="modal-info-item">
-                  <span className="modal-info-label">Provider</span>
-                  <span className="modal-info-value">{selectedService.providerName}</span>
+                  <span className="modal-info-label">Experience</span>
+                  <span className="modal-info-value">{selectedWorker.yearsExperience} Years</span>
                 </div>
                 <div className="modal-info-item">
-                  <span className="modal-info-label">Estimated Duration</span>
-                  <span className="modal-info-value">{selectedService.estimatedDuration}</span>
+                  <span className="modal-info-label">Response Time</span>
+                  <span className="modal-info-value">{selectedWorker.responseTime} ({selectedWorker.responseRate}%)</span>
                 </div>
               </div>
 
               <div>
-                <h3 className="modal-description-title">Service Description</h3>
-                <p className="modal-description-text">{selectedService.fullDescription}</p>
+                <h3 className="modal-description-title">About Me</h3>
+                <p className="modal-description-text">{selectedWorker.bio}</p>
               </div>
 
-              {selectedService.tags && selectedService.tags.length > 0 && (
+              {selectedWorker.skills && selectedWorker.skills.length > 0 && (
                 <div>
-                  <h3 className="modal-description-title" style={{ fontSize: '0.85rem' }}>Tags</h3>
+                  <h3 className="modal-description-title" style={{ fontSize: '1rem', marginTop: '1.5rem', marginBottom: '0.5rem' }}>Skills</h3>
                   <div className="modal-tags">
-                    {selectedService.tags.map((tag) => (
-                      <span key={tag} className="modal-tag">#{tag}</span>
+                    {selectedWorker.skills.map((skill) => (
+                      <span key={skill} className="modal-tag">{skill}</span>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* Related/Recommended Services */}
-              {selectedService.relatedServices && selectedService.relatedServices.length > 0 && (
-                <div className="related-section">
-                  <h3 className="related-title">Recommended Services</h3>
-                  <div className="related-grid">
-                    {selectedService.relatedServices.map((rel) => (
+              {selectedWorker.certifications && selectedWorker.certifications.length > 0 && (
+                <div>
+                  <h3 className="modal-description-title" style={{ fontSize: '1rem', marginTop: '1.5rem', marginBottom: '0.5rem' }}>Certifications</h3>
+                  <ul style={{ paddingLeft: '20px', color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+                    {selectedWorker.certifications.map((cert) => (
+                      <li key={cert} style={{ marginBottom: '0.25rem' }}>{cert}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {selectedWorker.languages && selectedWorker.languages.length > 0 && (
+                <div>
+                  <h3 className="modal-description-title" style={{ fontSize: '1rem', marginTop: '1.5rem', marginBottom: '0.5rem' }}>Languages</h3>
+                  <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+                    {selectedWorker.languages.join(', ')}
+                  </p>
+                </div>
+              )}
+
+              {selectedWorker.similarWorkers && selectedWorker.similarWorkers.length > 0 && (
+                <div className="related-section" style={{ marginTop: '2rem' }}>
+                  <h3 className="related-title">Similar Workers</h3>
+                  <div className="related-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
+                    {selectedWorker.similarWorkers.map((rel) => (
                       <div 
                         key={rel._id} 
                         className="related-card"
-                        onClick={() => handleCardClick(rel.slug)}
+                        onClick={() => handleCardClick(rel._id)}
+                        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '1rem' }}
                       >
-                        <h4 className="related-card-title">{rel.title}</h4>
-                        <div className="related-card-meta">
-                          <span style={{ color: 'var(--primary)' }}>${rel.startingPrice}</span>
-                          <span>{rel.providerName}</span>
+                        {rel.profilePhoto ? (
+                          <img src={rel.profilePhoto} alt={rel.displayName} style={{ width: '50px', height: '50px', borderRadius: '50%', objectFit: 'cover', marginBottom: '0.5rem' }} />
+                        ) : (
+                          <div style={{ width: '50px', height: '50px', borderRadius: '50%', backgroundColor: 'var(--gray-200)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.5rem' }}>
+                            <i className="fa-solid fa-user" style={{ color: 'var(--gray-500)', fontSize: '1.2rem' }}></i>
+                          </div>
+                        )}
+                        <h4 className="related-card-title" style={{ fontSize: '0.95rem', marginBottom: '0.25rem' }}>{rel.displayName}</h4>
+                        <div className="related-card-meta" style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', alignItems: 'center' }}>
+                          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{rel.city}</span>
+                          <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>${rel.startingPrice}/hr</span>
                         </div>
                       </div>
                     ))}
@@ -349,7 +411,7 @@ export default function Dashboard() {
 
               {/* Booking Limitation Notice */}
               <div style={{ 
-                marginTop: '16px', 
+                marginTop: '1.5rem',
                 padding: '16px', 
                 backgroundColor: 'rgba(79, 70, 229, 0.05)', 
                 border: '1px solid rgba(79, 70, 229, 0.15)', 
