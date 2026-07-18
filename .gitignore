@@ -56,3 +56,7 @@ coverage/
 # OS metadata
 .DS_Store
 Thumbs.db
+
+# Project-specific secrets and instructions
+AGENTS.md
+server/.env
