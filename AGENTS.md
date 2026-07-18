@@ -855,7 +855,9 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Initial project guidelines and secure auth blueprint configuration.
 
-# Module: Customer Service Discovery (MVP)
+# Module
+
+Customer Discovery & Worker Marketplace (MVP)
 
 Version: 2.0.0
 
@@ -863,207 +865,358 @@ Version: 2.0.0
 
 # Purpose
 
-This document defines the business rules, system design, development standards, and AI instructions for the **Customer Service Discovery** module.
+This module defines the foundation of the customer experience.
 
-The AI agent MUST read this file before generating, modifying, or deleting any code.
+The platform is **NOT** a marketplace for service listings.
 
-This document is the single source of truth for this module.
+The platform is a marketplace that connects **Customers** directly with **Workers**.
 
----
+Customers do not browse services.
 
-# AI Rules
+Customers browse workers based on their skills, availability, location, reputation, and experience.
 
-Before making any change:
+The objective of this module is to help customers discover the right worker before any booking occurs.
 
-1. Read this entire document.
-2. Follow every rule in this document.
-3. Do not assume business logic.
-4. If unsure, ask instead of inventing behavior.
-5. Never break existing architecture.
-6. Never bypass validation.
-7. Never remove security.
-8. Never generate temporary or mock business logic unless explicitly requested.
-9. Every new feature must integrate cleanly with existing modules.
-10. Every update to this module must increment the version and append to the Version History section.
+Booking is outside the scope of this module.
 
 ---
 
-# MVP Goal
+# AI Development Rules
 
-The objective is **NOT** to allow booking.
+Before generating any code:
 
-The objective is to help customers discover services quickly and confidently.
-
-The platform should answer one question:
-
-> "What service best solves my problem?"
-
-Booking comes later.
+- Read this document completely.
+- Follow every business rule.
+- Never assume missing business logic.
+- Never create features outside this module.
+- Never mix future booking logic into this module.
+- Always prioritize scalability.
+- Always follow existing project architecture.
+- Never create duplicate business logic.
+- Every update must increment the module version and update the Version History.
 
 ---
 
-# Platform Vision
+# Product Vision
 
-The platform connects customers with service providers.
+The platform connects people who need work done with skilled workers.
 
-Customer Journey:
+The customer should never think:
 
-```
+> "Which service should I buy?"
+
+Instead, the customer should think:
+
+> "Who is the best person to help me?"
+
+Workers become the primary product.
+
+Customers choose workers.
+
+Workers perform jobs.
+
+Bookings happen afterwards.
+
+---
+
+# Platform Philosophy
+
+Worker First.
+
+Every interaction should revolve around helping customers discover trustworthy workers.
+
+Everything else supports this goal.
+
+---
+
+# MVP Scope
+
+Included
+
+- Browse workers
+- Search workers
+- Filter workers
+- Worker profile
+- Worker discovery
+- Categories
+- Recommendations
+
+Not Included
+
+- Booking
+- Payments
+- Chat
+- Notifications
+- Reviews
+- Scheduling
+- Calendar
+- Live Tracking
+- Availability Management
+
+---
+
+# Customer Journey
+
+The platform should follow this exact flow.
+
+```text
 Login
 
 ↓
 
-Browse Services
+Home
 
 ↓
 
-Search Services
+Search or Browse
 
 ↓
 
-Apply Filters
+Select Category
 
 ↓
 
-Open Service Details
+Browse Workers
 
 ↓
 
-Decide if this service fits the need
+Open Worker Profile
 
 ↓
 
-(Book Later)
+Learn about Worker
+
+↓
+
+Decide whether to hire
+
+↓
+
+(Booking Module)
 ```
 
-No booking logic should exist in this module.
+No booking functionality belongs inside this module.
 
 ---
 
-# Primary User
+# Home Page
 
-Customer
+The Home page should immediately answer one question:
 
-Only customer features are implemented.
+"What do you need help with?"
 
-Provider, Admin, and Staff portals are outside the scope of this module.
+The interface should encourage discovery instead of overwhelming the customer.
 
----
+Sections:
 
-# Core Business Logic
+- Greeting
+- Search Bar
+- Popular Categories
+- Nearby Workers
+- Recommended Workers
+- Recently Viewed Workers (Future)
+- Featured Workers
+- Popular Skills
 
-A customer should be able to:
-
-* Browse available services
-* Search services
-* Filter services
-* Sort services
-* View service details
-
-A customer CANNOT:
-
-* Book
-* Contact provider
-* Chat
-* Pay
-* Review
-* Cancel bookings
-
-Those belong to future modules.
+The customer should discover workers within seconds.
 
 ---
 
-# Service Discovery Philosophy
-
-Customers should never feel lost.
-
-Every page should help customers answer:
-
-* What services exist?
-* Which one fits my needs?
-* Who offers it?
-* Is it trustworthy?
-* How much does it cost?
-
----
-
-# Service Entity
-
-Every service contains:
-
-* id
-* slug
-* title
-* shortDescription
-* fullDescription
-* category
-* thumbnail
-* gallery
-* providerId
-* providerName
-* serviceArea
-* startingPrice
-* estimatedDuration
-* tags
-* status
-* createdAt
-* updatedAt
-
----
-
-# Service Status
-
-Only services marked as:
-
-ACTIVE
-
-should be visible.
-
-Hidden services:
-
-* Draft
-* Archived
-* Suspended
-* Deleted
-
-must never appear.
-
----
-
-# Search Logic
+# Search
 
 Search should support:
 
-* Title
-* Description
-* Tags
-* Category
+- Worker name
+- Skill
+- Category
+- Location
+- Keywords
 
-Search should be:
+Search behavior:
 
-Case insensitive
+- Ignore case
+- Ignore leading/trailing spaces
+- Support partial matching
+- Fast response
+- Debounced input
+- Paginated results
 
-Trim whitespace
+---
 
-Ignore duplicate spaces
+# Categories
 
-No exact-match requirement.
+Examples:
+
+- Plumbing
+- Electrical
+- House Cleaning
+- Appliance Repair
+- Carpentry
+- Painting
+- Gardening
+- Air Conditioning
+- Pest Control
+- Laundry
+- Moving
+- Tutoring
+
+Categories organize workers.
+
+Categories are NOT services.
+
+---
+
+# Worker Entity
+
+Every worker should contain:
+
+- id
+- profilePhoto
+- fullName
+- displayName
+- bio
+- skills
+- categories
+- yearsExperience
+- city
+- province
+- serviceRadius
+- verificationStatus
+- averageRating
+- completedJobs
+- responseRate
+- responseTime
+- portfolio
+- certifications
+- languages
+- status
+- createdAt
+- updatedAt
+
+Never expose private information.
+
+---
+
+# Worker Status
+
+Visible:
+
+- Active
+
+Hidden:
+
+- Pending Verification
+- Suspended
+- Archived
+- Deleted
+
+Customers must never see inactive workers.
+
+---
+
+# Worker Card
+
+Every worker card should contain:
+
+- Photo
+- Name
+- Verification Badge
+- Primary Skill
+- Rating
+- Completed Jobs
+- Distance
+- Starting Price
+- Response Time
+
+Cards should remain clean and minimal.
+
+Avoid clutter.
+
+---
+
+# Worker Profile
+
+A worker profile should help the customer decide whether they trust the worker.
+
+Display:
+
+Profile Photo
+
+Full Name
+
+Verification Status
+
+About
+
+Skills
+
+Years of Experience
+
+Portfolio
+
+Certificates
+
+Completed Jobs
+
+Average Rating
+
+Languages
+
+Coverage Area
+
+Response Time
+
+Response Rate
+
+Similar Workers
+
+Future modules will add:
+
+- Reviews
+- Booking
+- Chat
+- Schedule
+- Availability
+
+---
+
+# Skills
+
+Workers own skills.
+
+Example:
+
+Worker
+
+Skills
+
+- Plumbing
+- Pipe Installation
+- Leak Repair
+- Drain Cleaning
+
+Skills describe capabilities.
+
+They are not individual products.
 
 ---
 
 # Filtering
 
-Support filtering by:
+Allow filtering by:
 
-* Category
-* Service Area
-* Price Range
+- Category
+- Distance
+- Rating
+- Experience
+- Price Range
 
 Future:
 
-* Rating
-* Availability
-* Verified Provider
+- Availability
+- Verified Only
+- Languages
+- Emergency Response
 
 ---
 
@@ -1071,140 +1224,113 @@ Future:
 
 Support:
 
-Newest
+- Recommended
+- Nearest
+- Highest Rated
+- Most Experienced
+- Lowest Price
+- Highest Price
+- Recently Joined
 
-Oldest
-
-Price Low → High
-
-Price High → Low
-
-Alphabetical
+Recommended should be the default.
 
 ---
 
-# Pagination
+# Recommendations
 
-Do NOT return all services.
+Recommend workers using:
 
-Default:
+- Same category
+- Similar skills
+- Nearby location
+- Popular workers
 
-20 services per page.
+Never recommend inactive workers.
+
+---
+
+# UI/UX Philosophy
+
+The interface should feel effortless.
+
+Users should never need to think about where to go next.
+
+Every screen should have one primary action.
+
+Reduce unnecessary clicks.
+
+Avoid information overload.
+
+Use generous spacing.
+
+Prioritize readability.
+
+Keep visual hierarchy clear.
+
+---
+
+# UI Standards
+
+Use a clean and modern layout.
+
+Every page should include:
+
+- Clear page title
+- Search
+- Consistent navigation
+- Loading states
+- Empty states
+- Error states
+- Skeleton loaders
+- Responsive layout
+
+Never display blank screens.
+
+---
+
+# Mobile First
+
+Design for mobile first.
 
 Support:
 
-page
+- Desktop
+- Tablet
+- Mobile
 
-limit
+Touch targets should be comfortable.
 
----
-
-# Service Cards
-
-Each card should display:
-
-* Thumbnail
-* Title
-* Category
-* Provider
-* Starting Price
-* Short Description
-
-Cards should be lightweight.
-
-Avoid excessive information.
+Navigation should remain simple.
 
 ---
 
-# Service Details Page
+# Accessibility
 
-Display:
+Support:
 
-Gallery
+- Keyboard navigation
+- Screen readers
+- Proper headings
+- Semantic HTML
+- Alt text
+- Visible focus indicators
+- Sufficient color contrast
 
-Full Description
-
-Provider
-
-Starting Price
-
-Estimated Duration
-
-Coverage Area
-
-Related Services
-
-Future:
-
-Reviews
-
-Booking Button
-
-Availability
-
----
-
-# Related Services
-
-Recommend services using:
-
-1. Same category
-2. Same provider
-3. Similar tags
-
-Never recommend inactive services.
-
----
-
-# Empty States
-
-If no services exist:
-
-Display friendly message.
-
-Suggest browsing categories.
-
-Never show blank pages.
-
----
-
-# Error Handling
-
-If service is missing:
-
-Return:
-
-404
-
-Do not crash.
-
-Do not expose database errors.
+Accessibility is required.
 
 ---
 
 # Performance
 
-Use pagination.
+Use:
 
-Lazy load images.
+- Pagination
+- Lazy loading
+- Optimized images
+- Efficient database queries
+- Caching where appropriate
 
-Optimize database queries.
-
-Avoid N+1 queries.
-
----
-
-# Images
-
-Validate:
-
-* File type
-* File size
-* Resolution
-
-Use optimized images.
-
-Never trust uploaded filenames.
+Avoid unnecessary re-renders.
 
 ---
 
@@ -1214,33 +1340,37 @@ RESTful.
 
 Examples:
 
-GET /services
+GET /workers
 
-GET /services/:slug
+GET /workers/:id
 
 GET /categories
 
-Future endpoints should remain consistent.
+GET /workers/recommended
+
+GET /workers/nearby
+
+Maintain consistent response formats.
 
 ---
 
-# Response Format
+# Response Structure
 
-Every API response:
+Success
 
 {
-success,
-message,
-data,
-meta
+  success,
+  message,
+  data,
+  meta
 }
 
-Errors:
+Error
 
 {
-success,
-message,
-errors
+  success,
+  message,
+  errors
 }
 
 ---
@@ -1249,14 +1379,16 @@ errors
 
 Validate:
 
-* Query parameters
-* Filters
-* Sort values
-* Pagination
-* IDs
-* Slugs
+- Search queries
+- Filters
+- Pagination
+- Sorting
+- Worker IDs
+- Category IDs
 
 Reject invalid requests.
+
+Never trust frontend validation.
 
 ---
 
@@ -1264,77 +1396,23 @@ Reject invalid requests.
 
 Never expose:
 
-Provider private data
+- Email
+- Phone number
+- Government IDs
+- Internal IDs
+- Authentication data
+- Environment variables
+- Secrets
+- Admin-only information
 
-Internal IDs
-
-Database structure
-
-Secrets
-
-Environment variables
-
-Admin-only information
-
----
-
-# Privacy
-
-Customers should only receive public information.
-
-Do not expose:
-
-Provider email
-
-Phone
-
-Government IDs
-
-Private notes
-
-Internal analytics
-
----
-
-# UI Principles
-
-Keep interfaces:
-
-Simple
-
-Fast
-
-Minimal
-
-Mobile-friendly
-
-Accessible
-
-Do not overload pages.
-
----
-
-# Accessibility
-
-Support:
-
-Keyboard navigation
-
-Semantic HTML
-
-ARIA labels where needed
-
-Alt text for images
-
-Visible focus states
+Only public worker information should be returned.
 
 ---
 
 # Architecture
 
-Recommended layers:
+Recommended flow:
 
-```
 Presentation
 
 ↓
@@ -1352,13 +1430,12 @@ Repository
 ↓
 
 Database
-```
 
-Business logic belongs inside the Service layer.
+Business logic belongs in Services.
+
+Repositories only access data.
 
 Controllers should remain thin.
-
-Repositories should only access data.
 
 ---
 
@@ -1366,33 +1443,16 @@ Repositories should only access data.
 
 Use:
 
-TypeScript
-
-Strict typing
-
-Reusable components
-
-Reusable services
-
-Reusable validators
+- TypeScript
+- Strict typing
+- Reusable components
+- Reusable hooks
+- Reusable services
+- Clear naming conventions
 
 Avoid duplicated logic.
 
----
-
-# Naming
-
-Use clear names.
-
-Example:
-
-getServices()
-
-searchServices()
-
-findServiceBySlug()
-
-Avoid vague names.
+Favor composition over duplication.
 
 ---
 
@@ -1400,51 +1460,36 @@ Avoid vague names.
 
 Log:
 
-Errors
-
-Performance
-
-Unexpected failures
+- Errors
+- Slow requests
+- Unexpected failures
 
 Never log:
 
-Secrets
-
-Tokens
-
-Passwords
-
-Personal information
+- Passwords
+- Tokens
+- Secrets
+- Personal information
 
 ---
 
 # Future Modules
 
-The following are intentionally excluded:
+The following modules are intentionally excluded:
 
-Booking
+- Booking
+- Worker Availability
+- Scheduling
+- Instant Booking
+- Live Tracking
+- Payments
+- Chat
+- Reviews
+- Notifications
+- Admin Dashboard
+- Worker Dashboard
 
-Provider Dashboard
-
-Admin Dashboard
-
-Payments
-
-Chat
-
-Reviews
-
-Notifications
-
-Scheduling
-
-Availability
-
-Maps
-
-Instant Booking
-
-These will be separate modules.
+Do not implement them unless explicitly requested.
 
 ---
 
@@ -1452,36 +1497,40 @@ These will be separate modules.
 
 This module is complete when a customer can:
 
-✔ Browse services
+✓ Browse workers
 
-✔ Search services
+✓ Search workers
 
-✔ Filter services
+✓ Filter workers
 
-✔ Sort services
+✓ Sort workers
 
-✔ Open service details
+✓ Open worker profiles
 
-Without any booking functionality.
+✓ Discover nearby workers
+
+✓ View worker information
+
+without any booking functionality.
 
 ---
 
-# AI Development Principles
+# AI Principles
 
-The AI should prioritize:
+The AI should always optimize for:
 
-1. Clean Architecture
-2. Maintainability
-3. Scalability
-4. Security
+1. Simplicity
+2. Scalability
+3. Security
+4. Maintainability
 5. Readability
-6. Reusability
+6. User Experience
 
-Never optimize prematurely.
+Never over-engineer.
 
-Never generate unnecessary complexity.
+Never add features outside the current scope.
 
-Prefer simple, extensible solutions.
+Build only what is required for the current module while keeping the architecture ready for future expansion.
 
 ---
 
@@ -1492,18 +1541,18 @@ Prefer simple, extensible solutions.
 Date:
 2026-07-19
 
-Initial Customer Service Discovery module.
+Added:
 
-Features:
-
-* Browse services
-* Search
-* Filtering
-* Sorting
-* Service details
-* Architecture rules
-* Business logic
-* API standards
-* Security rules
-* UI guidelines
-* AI development instructions
+- Worker-first marketplace architecture
+- Customer discovery flow
+- Worker profile system
+- Worker browsing
+- Search
+- Filtering
+- Sorting
+- Recommendations
+- UI/UX principles
+- Performance guidelines
+- API standards
+- Business rules
+- Future module boundaries

@@ -58,5 +58,4 @@ coverage/
 Thumbs.db
 
 # Project-specific secrets and instructions
-AGENTS.md
 server/.env
