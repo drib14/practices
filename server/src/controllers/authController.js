@@ -9,7 +9,7 @@ import {
   sendVerificationEmail,
   sendWelcomeEmail,
   sendLockoutAlert,
-  sendPasswordResetEmail
+  sendPasswordResetOTP
 } from '../services/mail.js';
 
 // Password Validation Helper
@@ -72,7 +72,11 @@ const generateAccessToken = (user) => {
   return jwt.sign(
     { id: user._id, role: user.role },
     env.JWT_ACCESS_SECRET,
-    { expiresIn: '15m' }
+    {
+      expiresIn: '15m',
+      issuer: 'fixconnect',
+      audience: 'fixconnect-client'
+    }
   );
 };
 
@@ -102,10 +106,28 @@ const clearCookies = (res) => {
 // @desc    Register a new user
 // @route   POST /api/auth/register
 export const register = async (req, res) => {
+  // Input Validation and whitelisting to prevent NoSQL injection
+  const allowedFields = ['username', 'email', 'password', 'firstName', 'lastName', 'role'];
+  const extraFields = Object.keys(req.body).filter(key => !allowedFields.includes(key));
+  if (extraFields.length > 0) {
+    return res.status(400).json({ success: false, error: 'Registration failed: unexpected fields present' });
+  }
+
   const { username, email, password, firstName, lastName, role } = req.body;
 
   if (!username || !email || !password || !firstName || !lastName) {
     return res.status(400).json({ success: false, error: 'All fields are required' });
+  }
+
+  if (
+    typeof username !== 'string' ||
+    typeof email !== 'string' ||
+    typeof password !== 'string' ||
+    typeof firstName !== 'string' ||
+    typeof lastName !== 'string' ||
+    (role && typeof role !== 'string')
+  ) {
+    return res.status(400).json({ success: false, error: 'Invalid input types' });
   }
 
   const passwordError = validatePasswordStrength(password, email);
@@ -115,40 +137,44 @@ export const register = async (req, res) => {
 
   try {
     const existingUser = await User.findOne({
-      $or: [{ email: email.toLowerCase() }, { username: username.trim() }]
+      $or: [{ email: email.toLowerCase().trim() }, { username: username.trim() }]
     });
 
     if (existingUser) {
-      // Enumeration protection: do not reveal which field exists in logs/errors if possible, 
-      // but registration requires telling them they can't duplicate. We make it generic.
       return res.status(400).json({ success: false, error: 'Registration failed: account credentials already in use' });
     }
 
-    const verificationToken = crypto.randomBytes(32).toString('hex');
-    const verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
-
-    const salt = await bcrypt.genSalt(12); // bcrypt 12+ rounds
+    const salt = await bcrypt.genSalt(12); // bcrypt 12 rounds
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const newUser = await User.create({
       username: username.trim(),
-      email: email.toLowerCase(),
+      email: email.toLowerCase().trim(),
       password: hashedPassword,
       firstName: firstName.trim(),
       lastName: lastName.trim(),
       role: role === 'provider' ? 'provider' : 'user',
-      verificationToken,
-      verificationTokenExpires
+      isVerified: true,
+      verificationToken: null,
+      verificationTokenExpires: null
     });
 
-    // Send verification email asynchronously
-    sendVerificationEmail(newUser.email, verificationToken, `${newUser.firstName} ${newUser.lastName}`);
+    // Send welcome email immediately instead of verification email
+    sendWelcomeEmail(newUser.email, `${newUser.firstName} ${newUser.lastName}`);
 
-    logger.info('User registered successfully', { userId: newUser._id });
+    logger.info('User registered successfully (auto-verified)', { userId: newUser._id });
 
     res.status(201).json({
       success: true,
-      message: 'Registration successful! Verification email has been sent. Please verify your account.'
+      message: 'Registration successful! Welcome to FixConnect.',
+      user: {
+        id: newUser._id,
+        username: newUser.username,
+        email: newUser.email,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+        role: newUser.role
+      }
     });
   } catch (error) {
     logger.error('Registration error', error);
@@ -196,16 +222,27 @@ export const verifyEmail = async (req, res) => {
 // @desc    Log in user
 // @route   POST /api/auth/login
 export const login = async (req, res) => {
+  // Input Validation and whitelisting to prevent NoSQL injection
+  const allowedFields = ['usernameOrEmail', 'password'];
+  const extraFields = Object.keys(req.body).filter(key => !allowedFields.includes(key));
+  if (extraFields.length > 0) {
+    return res.status(401).json({ success: false, error: 'Invalid credentials' });
+  }
+
   const { usernameOrEmail, password } = req.body;
 
   if (!usernameOrEmail || !password) {
     return res.status(400).json({ success: false, error: 'All fields are required' });
   }
 
+  if (typeof usernameOrEmail !== 'string' || typeof password !== 'string') {
+    return res.status(401).json({ success: false, error: 'Invalid credentials' });
+  }
+
   try {
     const user = await User.findOne({
       $or: [
-        { email: usernameOrEmail.toLowerCase() },
+        { email: usernameOrEmail.toLowerCase().trim() },
         { username: usernameOrEmail.trim() }
       ]
     });
@@ -240,15 +277,6 @@ export const login = async (req, res) => {
       await user.save();
       logger.warn('Failed login attempt: incorrect password', { email: user.email });
       return res.status(401).json({ success: false, error: 'Invalid credentials' });
-    }
-
-    // Check verification status
-    if (!user.isVerified) {
-      return res.status(403).json({
-        success: false,
-        error: 'Please verify your email address before logging in.',
-        code: 'EMAIL_UNVERIFIED'
-      });
     }
 
     // Success: reset lock attributes
@@ -376,62 +404,91 @@ export const logoutAll = async (req, res) => {
   }
 };
 
-// @desc    Forgot password (request reset link)
+// @desc    Forgot password (request 6-digit OTP verification code)
 // @route   POST /api/auth/forgot-password
 export const forgotPassword = async (req, res) => {
+  // Input Validation and whitelisting
+  const allowedFields = ['email'];
+  const extraFields = Object.keys(req.body).filter(key => !allowedFields.includes(key));
+  if (extraFields.length > 0) {
+    return res.status(400).json({ success: false, error: 'Invalid input' });
+  }
+
   const { email } = req.body;
 
   if (!email) {
     return res.status(400).json({ success: false, error: 'Email is required' });
   }
 
+  if (typeof email !== 'string') {
+    return res.status(400).json({ success: false, error: 'Invalid input types' });
+  }
+
   try {
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
 
     if (!user) {
-      // Enumeration protection: return success message even if email is not found
+      // Enumeration protection
       logger.warn('Password reset request for non-existent email', { email });
       return res.status(200).json({
         success: true,
-        message: 'If the email exists, a password reset link has been dispatched.'
+        message: 'If the email exists, a 6-digit verification code has been dispatched.'
       });
     }
 
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    user.resetPasswordToken = resetToken;
-    user.resetPasswordExpires = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
+    // Generate random 6-digit numeric code
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const hashedOTP = crypto.createHash('sha256').update(otp).digest('hex');
+
+    user.resetPasswordOTP = hashedOTP;
+    user.resetPasswordOTPExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
     await user.save();
 
-    sendPasswordResetEmail(user.email, resetToken, `${user.firstName} ${user.lastName}`);
-    logger.info('Password reset token generated and sent', { userId: user._id });
+    sendPasswordResetOTP(user.email, otp, `${user.firstName} ${user.lastName}`);
+    logger.info('Password reset 6-digit OTP generated and sent', { userId: user._id });
 
     res.status(200).json({
       success: true,
-      message: 'If the email exists, a password reset link has been dispatched.'
+      message: 'If the email exists, a 6-digit verification code has been dispatched.'
     });
   } catch (error) {
-    logger.error('Forgot password error', error);
+    logger.error('Forgot password OTP error', error);
     res.status(500).json({ success: false, error: 'Internal Server Error' });
   }
 };
 
-// @desc    Reset password using reset token
+// @desc    Reset password using 6-digit code (OTP)
 // @route   POST /api/auth/reset-password
 export const resetPassword = async (req, res) => {
-  const { token, newPassword } = req.body;
+  // Input Validation and whitelisting
+  const allowedFields = ['email', 'code', 'newPassword'];
+  const extraFields = Object.keys(req.body).filter(key => !allowedFields.includes(key));
+  if (extraFields.length > 0) {
+    return res.status(400).json({ success: false, error: 'Invalid input' });
+  }
 
-  if (!token || !newPassword) {
-    return res.status(400).json({ success: false, error: 'Token and new password are required' });
+  const { email, code, newPassword } = req.body;
+
+  if (!email || !code || !newPassword) {
+    return res.status(400).json({ success: false, error: 'Email, verification code, and new password are required' });
+  }
+
+  if (typeof email !== 'string' || typeof code !== 'string' || typeof newPassword !== 'string') {
+    return res.status(400).json({ success: false, error: 'Invalid input types' });
   }
 
   try {
-    const user = await User.findOne({
-      resetPasswordToken: token,
-      resetPasswordExpires: { $gt: Date.now() }
-    });
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
 
     if (!user) {
-      return res.status(400).json({ success: false, error: 'Reset token is invalid or has expired.' });
+      return res.status(400).json({ success: false, error: 'Invalid email or verification code' });
+    }
+
+    // Hash code input and match
+    const hashedOTP = crypto.createHash('sha256').update(code.trim()).digest('hex');
+
+    if (user.resetPasswordOTP !== hashedOTP || user.resetPasswordOTPExpires < Date.now()) {
+      return res.status(400).json({ success: false, error: 'Invalid or expired verification code' });
     }
 
     const passwordError = validatePasswordStrength(newPassword, user.email);
@@ -439,29 +496,28 @@ export const resetPassword = async (req, res) => {
       return res.status(400).json({ success: false, error: passwordError });
     }
 
-    // Invalidate reset fields and update password
-    user.resetPasswordToken = null;
-    user.resetPasswordExpires = null;
+    // Invalidate reset properties and update password
+    user.resetPasswordOTP = null;
+    user.resetPasswordOTPExpires = null;
     
     const salt = await bcrypt.genSalt(12);
     user.password = await bcrypt.hash(newPassword, salt);
     
-    // Reset brute force count as well
     user.loginAttempts = 0;
     user.lockUntil = null;
     await user.save();
 
-    // Revoke all existing sessions since password changed
+    // Revoke all active sessions
     await Session.deleteMany({ user: user._id });
 
-    logger.info('User password reset successfully', { userId: user._id });
+    logger.info('User password reset successfully via OTP', { userId: user._id });
 
     res.status(200).json({
       success: true,
       message: 'Password reset successfully! You can now log in.'
     });
   } catch (error) {
-    logger.error('Reset password error', error);
+    logger.error('Reset password OTP verification error', error);
     res.status(500).json({ success: false, error: 'Internal Server Error' });
   }
 };

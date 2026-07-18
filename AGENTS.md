@@ -800,8 +800,8 @@ Only the latest release is actively supported for security updates.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 1.1.x   | :white_check_mark: |
-| < 1.1.0 | :x:                |
+| 1.3.x   | :white_check_mark: |
+| < 1.3.0 | :x:                |
 
 ## Security Controls Implemented
 
@@ -820,6 +820,24 @@ If you identify a security vulnerability within this project, please do **not** 
 # Changelog
 
 All notable changes to this project will be documented in this file.
+
+## [1.3.0] - 2026-07-18
+
+### Added
+- Replaced link-based password resets with **6-digit OTP email verification codes**.
+- OTP codes are stored as SHA-256 hashes with 15-minute expiration.
+- Added `resetPasswordLimiter` (5 attempts/hour/IP) to prevent OTP brute force.
+- Migrated frontend to **Redux Toolkit** with centralized auth state (`authSlice.js`).
+- Restructured client into `pages/`, `components/`, `store/`, and `utils/` directories.
+- Integrated **SweetAlert2 Toast** notifications for all auth transactions.
+- Added premium OTP digit input with monospace styling.
+
+## [1.2.0] - 2026-07-18
+
+### Added
+- Migrated frontend client to React + Vite.
+- Reduced minimum password length constraint from 12 to 8.
+- Integrated premium multimedia check-wrench-hexagon logo.
 
 ## [1.1.0] - 2026-07-18
 

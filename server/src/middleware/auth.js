@@ -9,7 +9,10 @@ export const protect = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, env.JWT_ACCESS_SECRET);
+    const decoded = jwt.verify(token, env.JWT_ACCESS_SECRET, {
+      issuer: 'fixconnect',
+      audience: 'fixconnect-client'
+    });
     
     req.user = {
       id: decoded.id,

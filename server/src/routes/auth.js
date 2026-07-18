@@ -15,6 +15,7 @@ import {
   loginLimiter,
   registerLimiter,
   forgotPasswordLimiter,
+  resetPasswordLimiter,
   verifyEmailLimiter
 } from '../middleware/rateLimiter.js';
 
@@ -38,7 +39,7 @@ router.post('/logout-all', logoutAll);
 
 // Password Resets
 router.post('/forgot-password', forgotPasswordLimiter, forgotPassword);
-router.post('/reset-password', resetPassword);
+router.post('/reset-password', resetPasswordLimiter, resetPassword);
 
 // Profile
 router.get('/profile', protect, getProfile);

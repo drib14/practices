@@ -11,9 +11,15 @@
   
   --primary: #4f46e5;
   --primary-hover: #4338ca;
+  --primary-indigo-dark: #312e81; /* Matches the FC monogram logo accent */
   --success: #10b981;
   --danger: #ef4444;
   --input-bg: #f8fafc;
+}
+
+::selection {
+  background-color: rgba(79, 70, 229, 0.15);
+  color: var(--primary-indigo-dark);
 }
 
 * {
@@ -25,13 +31,21 @@
 }
 
 body {
-  background-color: var(--bg-color);
+  background: linear-gradient(-45deg, #eef2ff, #faf5ff, #f8fafc, #f1f5f9);
+  background-size: 400% 400%;
+  animation: gradientBG 15s ease infinite;
   color: var(--text-primary);
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 24px;
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* Minimalist Card */
@@ -343,3 +357,19 @@ body {
   flex: 1;
   min-width: 160px;
 }
+
+/* OTP Code Input */
+.otp-input {
+  font-size: 1.5rem !important;
+  letter-spacing: 12px;
+  text-align: center;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+}
+
+.otp-input::placeholder {
+  letter-spacing: 12px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+

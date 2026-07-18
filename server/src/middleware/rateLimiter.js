@@ -59,3 +59,16 @@ export const verifyEmailLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false
 });
+
+// Reset Password (OTP) Limiter: Max 5 attempts per hour per IP
+export const resetPasswordLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5,
+  message: {
+    success: false,
+    error: 'Too many reset attempts. Please try again in an hour.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
