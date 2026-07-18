@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO Optimization Meta Tags -->
+  <title>Register | FixConnect - Join Our Service Booking Platform</title>
+  <meta name="description" content="Sign up for FixConnect as a customer to book premium local services, or join as a service provider to manage bookings and expand your business.">
+  <meta name="keywords" content="FixConnect register, service provider sign up, customer registration, hire local services">
+  <meta name="robots" content="index, follow">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- FontAwesome & Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Libraries: Axios, SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+  <main class="glass-card" id="register-card">
+    <header class="brand-header">
+      <h1 class="brand-logo" id="register-brand-title">Create Account</h1>
+      <p class="brand-subtitle">Join FixConnect to book or offer services</p>
+    </header>
+
+    <form id="register-form" class="auth-form" novalidate>
+      <div class="form-group">
+        <label for="reg-fullname" class="form-label">Full Name</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-signature input-icon"></i>
+          <input type="text" id="reg-fullname" class="form-control" placeholder="Enter your full name" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-username" class="form-label">Username</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-user input-icon"></i>
+          <input type="text" id="reg-username" class="form-control" placeholder="Choose a username" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-email" class="form-label">Email Address</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-envelope input-icon"></i>
+          <input type="email" id="reg-email" class="form-control" placeholder="yourname@example.com" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-role" class="form-label">Account Role</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-briefcase input-icon"></i>
+          <select id="reg-role" class="form-control form-select" required>
+            <option value="user" selected>Customer (Book services)</option>
+            <option value="provider">Service Provider (Offer services)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-password" class="form-label">Password</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-lock input-icon"></i>
+          <input type="password" id="reg-password" class="form-control" placeholder="Minimum 12 characters" required>
+        </div>
+        
+        <!-- Live password strength checker checklist -->
+        <div class="password-checklists" id="reg-pw-checklist">
+          <span class="check-item invalid" id="len-check"><i class="fa-solid fa-circle-xmark"></i> 12+ Chars</span>
+          <span class="check-item invalid" id="upper-check"><i class="fa-solid fa-circle-xmark"></i> Uppercase</span>
+          <span class="check-item invalid" id="lower-check"><i class="fa-solid fa-circle-xmark"></i> Lowercase</span>
+          <span class="check-item invalid" id="num-check"><i class="fa-solid fa-circle-xmark"></i> Number</span>
+          <span class="check-item invalid" id="special-check"><i class="fa-solid fa-circle-xmark"></i> Special Char</span>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-premium" id="register-submit-btn">Sign Up</button>
+    </form>
+
+    <footer class="auth-footer">
+      <p>Already have an account? <a href="login.html" class="auth-link">Sign In here</a></p>
+    </footer>
+  </main>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

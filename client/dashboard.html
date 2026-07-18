@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO Optimization Meta Tags -->
+  <title>Dashboard | FixConnect - Manage Your Bookings</title>
+  <meta name="description" content="Manage your FixConnect profile, monitor active bookings, or view customer/provider schedules from your personalized dashboard.">
+  <meta name="keywords" content="FixConnect dashboard, profile management, booking control panel">
+  <meta name="robots" content="noindex, nofollow">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- FontAwesome & Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Libraries: Axios, SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+  <main class="dashboard-container" id="main-dashboard">
+    
+    <!-- Header -->
+    <header class="dashboard-header">
+      <div>
+        <h1 class="brand-logo" style="font-size: 2rem; margin-bottom: 0;" id="dashboard-title">FixConnect</h1>
+        <p class="brand-subtitle">Secure Session Portal</p>
+      </div>
+      <div style="text-align: right;">
+        <p style="font-weight: 600; color: #a5b4fc;" id="user-header-name">Loading...</p>
+        <p style="font-size: 0.8rem; color: #94a3b8;" id="user-header-role">Role: Customer</p>
+      </div>
+    </header>
+
+    <!-- Profile Details Card -->
+    <section class="profile-card">
+      <header>
+        <h2 style="font-size: 1.5rem; margin-bottom: 10px; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+          Account Profile Information
+        </h2>
+      </header>
+
+      <div class="profile-grid">
+        <div class="profile-item" id="p-fullname-box">
+          <div class="profile-item-label">Full Name</div>
+          <div class="profile-item-value" id="profile-fullname">Loading...</div>
+        </div>
+        <div class="profile-item" id="p-username-box">
+          <div class="profile-item-label">Username</div>
+          <div class="profile-item-value" id="profile-username">Loading...</div>
+        </div>
+        <div class="profile-item" id="p-email-box">
+          <div class="profile-item-label">Email Address</div>
+          <div class="profile-item-value" id="profile-email">Loading...</div>
+        </div>
+        <div class="profile-item" id="p-role-box">
+          <div class="profile-item-label">Account Role</div>
+          <div class="profile-item-value" style="text-transform: capitalize;" id="profile-role">Loading...</div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <footer class="btn-group">
+        <button id="logout-btn" class="btn-premium">
+          <i class="fa-solid fa-right-from-bracket"></i> Sign Out (Current Device)
+        </button>
+        <button id="logout-all-btn" class="btn-premium btn-secondary">
+          <i class="fa-solid fa-devices"></i> Sign Out (All Devices)
+        </button>
+      </footer>
+    </section>
+
+  </main>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
