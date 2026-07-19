@@ -5,7 +5,7 @@ import cookieParser from 'cookie-parser';
 import { env } from './config/env.js';
 import { connectDB } from './config/db.js';
 import authRoutes from './routes/auth.js';
-import workerRoutes from './routes/workers.js';
+import bookingRoutes from './routes/bookings.js';
 import { globalLimiter } from './middleware/rateLimiter.js';
 import { logger } from './utils/logger.js';
 import { seedWorkers } from './utils/seed.js';
@@ -74,7 +74,7 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRoutes);
 
 // Worker Discovery routes
-app.use('/api/workers', workerRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 // Simple diagnostic path
 app.get('/', (req, res) => {

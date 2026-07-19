@@ -1,72 +1,53 @@
-# FixConnect - Premium Service Booking Platform
+# FixConnect - On-Demand Service Platform
 
-FixConnect is a next-generation, secure, and intuitive local service booking platform. It bridges the gap between home/business clients needing help and local service professionals (electricians, plumbers, handymen, contractors).
+FixConnect is a secure, intuitive on-demand local service platform. Operating like a ride-hailing app, it connects home/business clients needing help with local service professionals instantly.
 
 ---
 
 ## Key Features
 
-1. **Service Marketplace & Discovery:**
-   - Search and browse local service categories.
-   - Filter professionals by rating, proximity, and specialization.
+1. **On-Demand Service Booking:**
+   - Instantly request a worker for specific categories (e.g., Plumbing, Electrical).
+   - Provide job descriptions, locations, and choose to book "Now" or "Schedule Later".
+   - Live tracking of job status (Searching for Worker -> Accepted).
+   - Automated worker simulation (for MVP demonstration purposes).
 
-2. **Intuitive Booking & Scheduling Engine:**
-   - Real-time calendar scheduling for booking jobs.
-   - Status logs and booking timeline updates for clients and providers.
-
-3. **Secure Authentication & Session Management:**
+2. **Secure Authentication & Session Management:**
    - **Walkthrough Signup Wizard:** User-friendly step-by-step onboarding flow.
-   - **HttpOnly Cookies Security:** Double-token JWT system (15-minute access, 7-day refresh) transmitted strictly via HttpOnly, Secure, and SameSite=Strict cookies to protect against XSS and CSRF.
-   - **Refresh Token Rotation:** Mitigates replay attacks by rotating tokens on each validation request, with breach detection mechanism that revokes all active session keys on token reuse.
-   - **Brute Force Lockout:** Automatically locks accounts for 30 minutes after 10 failed login attempts, alerting the user immediately via email.
-   - **Email Verification & Password Reset:** Secure validation links issued via single-use, time-restricted tokens.
+   - **HttpOnly Cookies Security:** Double-token JWT system transmitted strictly via HttpOnly, Secure, and SameSite=Strict cookies to protect against XSS and CSRF.
+   - **Refresh Token Rotation:** Mitigates replay attacks by rotating tokens on each validation request, with breach detection mechanism.
+   - **Brute Force Lockout:** Automatically locks accounts for 30 minutes after 10 failed login attempts.
+   - **Password Reset:** Secure OTP (6-digit) verification codes with expiration.
    - **Rate Limiting:** Route-specific limitations preventing brute force and platform overload.
 
-4. **Interactive Dashboard & Portal:**
-   - Personalized dashboards with distinct layouts for **Customers** and **Service Providers**.
-   - Session termination controls (logout from current device or logout from all devices).
+3. **Interactive Dashboard & Portal:**
+   - Streamlined dashboard focusing purely on requesting help and managing active bookings.
+   - Quick session termination controls (logout from current device or logout from all devices).
 
 ---
 
 ## Technology Stack
 
-* **Frontend:** Minimalist, mobile-first design using Vanilla HTML5, CSS3, ES Modules, Axios, and SweetAlert2. Search engine optimized (SEO) with descriptive headings and tags.
+* **Frontend:** React, Vite, Redux Toolkit, CSS3, Axios, and SweetAlert2. Search engine optimized (SEO) with descriptive headings and responsive layout.
 * **Backend:** Node.js, Express, Helmet (HTTP header security), CORS, cookie-parser, and express-rate-limit.
-* **Database:** MongoDB (using Mongoose schemas) with Session TTL indexing.
-* **Notifications:** Nodemailer SMTP integration for email receipts, security notifications, and registration confirmations.
+* **Database:** MongoDB (using Mongoose schemas).
+* **Notifications:** Nodemailer SMTP integration for security notifications and password resets.
 
 ---
 
 ## Local Setup & Installation
 
 ### 1. Prerequisites
-* Node.js (v16+)
+* Node.js (v18+)
 * MongoDB instance (local or MongoDB Atlas connection URL)
 
 ### 2. Backend Setup
-1. Open your terminal and navigate to the server folder:
-   ```bash
-   cd server
-   ```
-2. Install the Node packages:
-   ```bash
-   npm install
-   ```
-3. Create a `.env` configuration file in the `server/` directory:
-   ```env
-   PORT=5000
-   MONGO_URI=mongodb://...
-   JWT_ACCESS_SECRET=your-secure-256bit-access-secret
-   JWT_REFRESH_SECRET=your-secure-256bit-refresh-secret
-   EMAIL_USER=your-smtp-email@gmail.com
-   EMAIL_PASSWORD=your-smtp-app-password
-   CLIENT_URL=http://localhost:5500
-   ```
-4. Start the backend:
-   ```bash
-   npm run dev
-   ```
+1. Navigate to the server folder: `cd server`
+2. Install packages: `npm install`
+3. Create `.env` using `.env.example` as a template.
+4. Start backend: `npm run dev`
 
 ### 3. Frontend Setup
-1. Launch a local web server (such as the VS Code Live Server extension) targeting the `client/` folder on port **5500**.
-2. Open `http://localhost:5500/login.html` in your browser.
+1. Navigate to client folder: `cd client`
+2. Install packages: `npm install`
+3. Start frontend: `npm run dev`
